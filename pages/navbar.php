@@ -53,41 +53,43 @@
                 <?php
                 while ($row = mysqli_fetch_assoc($result)) {
                 ?>
-                    <li>
-                        <?php
-                        $id = $row['category_id'];
-                        $sql1 = "SELECT * FROM subcategory WHERE category_id = {$id}";
-                        $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
+                    <a href="products.php?sub=<?php echo $row['slug']; ?>">
+                        <li>
+                            <?php
+                            $id = $row['category_id'];
+                            $sql1 = "SELECT * FROM subcategory WHERE category_id = {$id}";
+                            $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
 
 
-                        echo $row['category_name'];
-                        echo mysqli_num_rows($result1) > 0 ? '<i class="bi bi-chevron-down"></i>' : '';
+                            echo $row['category_name'];
+                            echo mysqli_num_rows($result1) > 0 ? '<i class="bi bi-chevron-down"></i>' : '';
 
 
 
 
-                        if (mysqli_num_rows($result1) > 0) {
-                            echo '<ul class="drop-down">';
-                            while ($row1 = mysqli_fetch_assoc($result1)) {
-                        ?>
+                            if (mysqli_num_rows($result1) > 0) {
+                                echo '<ul class="drop-down">';
+                                while ($row1 = mysqli_fetch_assoc($result1)) {
+                            ?>
 
-                    <li>
-                        <a href="products.php?sub=<?php echo $row1['slug']; ?>"> <?php echo $row1['name']; ?> </a>
-                    </li>
-            <?php
+                        <li>
+                            <a href="products.php?sub=<?php echo $row1['slug']; ?>"> <?php echo $row1['name']; ?> </a>
+                        </li>
+                <?php
+                                }
+                                echo '</ul>';
                             }
-                            echo '</ul>';
-                        }
-            ?>
+                ?>
 
 
-            </li>
-        <?php
+                </li>
+                    </a>
+                <?php
                 }
-        ?>
-        <a href="contacts.php">
-            <li>CONTACT</li>
-        </a>
+                ?>
+                <a href="contacts.php">
+                    <li>CONTACT</li>
+                </a>
 
             </ul>
         </div>
