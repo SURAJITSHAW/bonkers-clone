@@ -81,7 +81,7 @@
                         ?>
 
 
-                                <a href="./product-details.php">
+                                <a href="./product-details.php?id=<?php echo $row['p_id'] ?>">
                                     <div class="product-card">
                                         <img src="<?php echo '../../bonkerscorner.com/uploads/' . $row['p_img']; ?>" alt="" />
                                         <div class="product-data">
@@ -92,7 +92,16 @@
                                                     ₹<span><?php echo $row['p_price']; ?></span>
                                                 </p>
                                                 <p class="discounted-price">
-                                                    ₹<span>799</span>
+                                                <?php
+                                                    $productPrice = $row['p_price'];
+                                                    $discountPercentage = 15;
+
+                                                    $discountAmount = $productPrice * ($discountPercentage / 100);
+                                                    $discountedPrice = $productPrice - $discountAmount;
+
+                                                    echo "₹<span>{$discountedPrice}</span>"
+                                                ?>
+                                                    
                                                 </p>
                                             </div>
                                             <div class="product-action">
