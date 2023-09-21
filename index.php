@@ -73,7 +73,7 @@
                         <?php
                         while ($row = mysqli_fetch_assoc($result)) {
                         ?>
-                            <a href="./pages/products.php?sub=<?php echo $row['slug']; ?>">
+                            <a href="./pages/products.php?sub=<?php echo $row['category_id']; ?>">
                                 <li>
                                     <?php
                                     $id = $row['category_id'];
@@ -93,7 +93,7 @@
                                     ?>
 
                                 <li>
-                                    <a href="./pages/products.php?sub=<?php echo $row1['slug']; ?>"> <?php echo $row1['name']; ?> </a>
+                                    <a href="./pages/products.php?sub=<?php echo $row1['id']; ?>"> <?php echo $row1['name']; ?> </a>
                                 </li>
                         <?php
                                         }

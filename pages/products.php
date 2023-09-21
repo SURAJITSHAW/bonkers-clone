@@ -49,213 +49,66 @@
                         </div>
                     </div>
                     <div class="product-listing">
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_black_wide_leg_sweatpants_8660-1-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
+
+
+                        <?php
+
+                        if (isset($_GET['sub'])) {
+                            $subCat = $_GET['sub'];
+
+                            $sql = "SELECT * FROM product AS p JOIN category AS c 
+                            ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
+                        } else {
+                            $sql = "SELECT * FROM 
+                            product AS p JOIN category AS c 
+                            ON p.category_id = c.category_id";
+                        }
+
+                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                        ?>
+
+
+                                <a href="./product-details.php">
+                                    <div class="product-card">
+                                        <img src="<?php echo '../../bonkerscorner.com/uploads/' . $row['p_img']; ?>" alt="" />
+                                        <div class="product-data">
+                                            <p class="category-details"><?php echo $row['category_name']; ?></p>
+                                            <p class="product-name"><?php echo $row['p_name']; ?></p>
+                                            <div class="product-price">
+                                                <p class="original-price">
+                                                    ₹<span><?php echo $row['p_price']; ?></span>
+                                                </p>
+                                                <p class="discounted-price">
+                                                    ₹<span>799</span>
+                                                </p>
+                                            </div>
+                                            <div class="product-action">
+                                                <button class="btn-add-to-cart">
+                                                    View Product</button><button class="btn-heart">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_happy-place-baby-tee_01-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_yellow-shorts_02-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/travis-scot-1-2-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_gray-Faded-Effect-joggers_06-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_cinderella_05-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_Chainsaw_03-1-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/Bonkerscorner_blue-top_05-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="./product-details.php">
-                            <div class="product-card">
-                                <img src="../assets/images/product/20230531_085739831_iOS-768x1152.jpg" alt="" />
-                                <div class="product-data">
-                                    <p class="category-details">Bottoms</p>
-                                    <p class="product-name">Blck Pant</p>
-                                    <div class="product-price">
-                                        <p class="original-price">
-                                            ₹<span>1499</span>
-                                        </p>
-                                        <p class="discounted-price">
-                                            ₹<span>799</span>
-                                        </p>
-                                    </div>
-                                    <div class="product-action">
-                                        <button class="btn-add-to-cart">
-                                            View Product</button><button class="btn-heart">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+                                </a>
+
+
+
+
+                        <?php
+                            }
+                        }
+                        ?>
+
+
+
+
+
+
+
                     </div>
                     <div class="products-pagination">
                         <ul>
