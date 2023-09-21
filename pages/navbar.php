@@ -53,7 +53,7 @@
                 <?php
                 while ($row = mysqli_fetch_assoc($result)) {
                 ?>
-                    <a href="products.php?sub=<?php echo $row['category_id']; ?>">
+                    <a href="products.php?cat=<?php echo $row['category_id']; ?>">
                         <li>
                             <?php
                             $id = $row['category_id'];

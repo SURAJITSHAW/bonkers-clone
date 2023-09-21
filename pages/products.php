@@ -58,7 +58,17 @@
 
                             $sql = "SELECT * FROM product AS p JOIN category AS c 
                             ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
-                        } else {
+                        } 
+                        
+                        else  if (isset($_GET['cat'])) {
+                            $cat = $_GET['cat'];
+
+                            $sql = "SELECT * FROM product AS p JOIN category AS c 
+                            ON p.category_id = c.category_id WHERE p.category_id='$cat'";
+                        } 
+                        
+                        
+                        else {
                             $sql = "SELECT * FROM 
                             product AS p JOIN category AS c 
                             ON p.category_id = c.category_id";
