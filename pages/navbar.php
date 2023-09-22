@@ -226,6 +226,20 @@
 </div>
 
 <script>
+    function updateSession(productId, quantity) {
+        // Send an AJAX request to a PHP script to update the session
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'update_session.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Session updated successfully
+                // You can add any additional handling here if needed
+            }
+        };
+        xhr.send('product_id=' + productId + '&quantity=' + quantity);
+    }
+
     function updateTotal() {
         var total = 0;
 
@@ -251,6 +265,9 @@
         if (currentValue < maxValue) {
             quantityInput.value = currentValue + 1;
             updateTotal();
+
+            // Call the updateSession function to update the session variable
+            updateSession(productId, currentValue + 1);
         }
     }
 
@@ -262,8 +279,12 @@
         if (currentValue > minValue) {
             quantityInput.value = currentValue - 1;
             updateTotal();
+
+            // Call the updateSession function to update the session variable
+            updateSession(productId, currentValue - 1);
         }
     }
+
 
     // Call updateTotal initially to calculate the total
     updateTotal();
