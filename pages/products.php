@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,17 +63,12 @@
 
                             $sql = "SELECT * FROM product AS p JOIN category AS c 
                             ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
-                        } 
-                        
-                        else  if (isset($_GET['cat'])) {
+                        } else  if (isset($_GET['cat'])) {
                             $cat = $_GET['cat'];
 
                             $sql = "SELECT * FROM product AS p JOIN category AS c 
                             ON p.category_id = c.category_id WHERE p.category_id='$cat'";
-                        } 
-                        
-                        
-                        else {
+                        } else {
                             $sql = "SELECT * FROM 
                             product AS p JOIN category AS c 
                             ON p.category_id = c.category_id";
@@ -92,7 +92,7 @@
                                                     ₹<span><?php echo $row['p_price']; ?></span>
                                                 </p>
                                                 <p class="discounted-price">
-                                                <?php
+                                                    <?php
                                                     $productPrice = $row['p_price'];
                                                     $discountPercentage = 15;
 
@@ -100,8 +100,8 @@
                                                     $discountedPrice = $productPrice - $discountAmount;
 
                                                     echo "₹<span>{$discountedPrice}</span>"
-                                                ?>
-                                                    
+                                                    ?>
+
                                                 </p>
                                             </div>
                                             <div class="product-action">

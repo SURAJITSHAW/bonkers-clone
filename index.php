@@ -1,3 +1,8 @@
+<?php 
+session_start();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -171,23 +176,29 @@
                 <a class="carousel-button prev" data-carousel-button="prev"><i class="bi bi-chevron-left"></i></a>
                 <a class="carousel-button next" data-carousel-button="next"><i class="bi bi-chevron-right"></i></a>
                 <ul data-slides>
+
+
+
                     <li class="slide" data-active>
-                        <a href="./pages/products.php">
+                        <a href="www.google.com">
                             <img src="./assets/images/landing/Disney_landing_web_banner.jpg" alt="" />
                         </a>
                     </li>
+
+
+
                     <li class="slide">
-                        <a href="./pages/products.php">
+                        <a href="./pages/products.php?cat=16">
                             <img src="./assets/images/landing/Marvel_landing_web_banner.jpg" alt="" />
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="./pages/products.php">
+                        <a href="./pages/products.php?cat=10">
                             <img src="./assets/images/landing/webbanner_mens.jpg" alt="" />
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="./pages/products.php">
+                        <a href="./pages/products.php?cat=12">
                             <img src="./assets/images/landing/webbanner_womens.jpg" alt="" />
                         </a>
                     </li>
@@ -196,10 +207,10 @@
 
             <!-- Gender Category Section -->
             <div class="gender">
-                <a href="./pages/products.php">
+                <a href="./pages/products.php?cat=12">
                     <img src="./assets/images/womens_5-1.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php">
+                <a href="./pages/products.php?cat=10">
                     <img src="./assets/images/mens_2-1-1.jpg" alt="" />
                 </a>
             </div>
@@ -209,13 +220,13 @@
                 <a href="./pages/products.php">
                     <img src="./assets/images/10.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php">
+                <a href="./pages/products.php?cat=15">
                     <img src="./assets/images/9.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php">
+                <a href="./pages/products.php?sub=28">
                     <img src="./assets/images/8.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php">
+                <a href="./pages/products.php?cat=16">
                     <img src="./assets/images/7.jpg" alt="" />
                 </a>
             </div>

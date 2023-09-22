@@ -1,3 +1,45 @@
+<?php
+session_start();
+
+if (isset($_POST['add-cart'])) {
+
+    if (isset($_SESSION['cart'])) {
+
+        $item_arr_id = array_column($_SESSION['cart'], 'p_id');
+
+        // print_r($item_arr_id);
+
+        if (in_array($_POST['p_id'], $item_arr_id)) {
+            echo "<script>alert('Product is already in the cart')</script>";
+            echo "<script>document.referrer</script>";
+            // print_r($_SESSION['cart']);
+        } else {
+            $count = count($_SESSION['cart']);
+            $item_arr = array(
+                'p_id' => $_POST['p_id'],
+                'quantity' => $_POST['quantity']
+            );
+            $_SESSION['cart'][$count] = $item_arr;
+
+            // print_r($_SESSION['cart']);
+        }
+    }
+    // If session variable cart isn't set
+    else {
+        $item_arr = array(
+            'p_id' => $_POST['p_id'],
+            'quantity' => $_POST['quantity']
+        );
+
+        $_SESSION['cart'][0] = $item_arr;
+
+        // print_r($_SESSION['cart']);
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -110,24 +152,115 @@
                                 </p>
                             </div>
 
-                            <label for="">Size:</label>
-                            <select name="" id="">
-                                <option value="xs">XS</option>
-                                <option value="s">S</option>
-                                <option value="m">M</option>
-                                <option value="l">L</option>
-                                <option value="xl">XL</option>
-                                <option value="xxl">XXL</option>
-                            </select>
-                            <div class="quantity-selector">
-                                <button class="quantyi-dec">-</button>
-                                <p class="quantity">0</p>
-                                <button class="quantity-inc">+</button>
-                            </div>
-                            <button class="btn">Add to Cart</button>
-                            <button class="btn">
-                                <i class="bi bi-heart"></i> Wishlist
-                            </button>
+
+
+
+
+
+
+                            <!-- <div class="quantity" style="display: flex; align-items: center;">
+
+                                <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
+
+                                    <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;">
+                                        <svg class="rey-icon rey-icon-reycore-icon-minus" aria-hidden="true" role="img" style="width: 20px; height: 20px; fill: #333;">
+                                            <use href="https://www.bonkerscorner.com/wp-content/plugins/rey-core/assets/images/icon-sprite.svg#reycore-icon-minus" xlink:href="https://www.bonkerscorner.com/wp-content/plugins/rey-core/assets/images/icon-sprite.svg#reycore-icon-minus"></use>
+                                        </svg>
+                                    </span>
+
+                                    <input type="number" id="quantity_650d2bef84a81" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="1" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
+
+                                    <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;">
+                                        <svg class="rey-icon rey-icon-reycore-icon-plus" aria-hidden="true" role="img" style="width: 20px; height: 20px; fill: #333;">
+                                            <use href="https://www.bonkerscorner.com/wp-content/plugins/rey-core/assets/images/icon-sprite.svg#reycore-icon-plus" xlink:href="https://www.bonkerscorner.com/wp-content/plugins/rey-core/assets/images/icon-sprite.svg#reycore-icon-plus"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                            </div> -->
+
+
+                            <form action="" method="post">
+                                <div class="quantity" style="display: flex; align-items: center; margin: 10px;">
+                                    <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
+                                        <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantityPD()">
+                                            -
+                                        </span>
+
+                                        <input readonly type="number" id="quantity_650d2bef84a81" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="1" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
+
+                                        <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantityPD()">
+                                            +
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <button name="add-cart" type="submit" class="single_add_to_cart_button button alt btn">
+                                    <span class="single_add_to_cart_button-text"><span class="__text">Add to cart</span></span>
+                                </button>
+
+                                <input type="hidden" name="p_id" value="<?php echo $row['p_id']; ?>">
+
+                                <button class="btn">
+                                    <i class="bi bi-heart"></i> Wishlist
+                                </button>
+                            </form>
+
+
+                            <script>
+                                function incrementQuantityPD() {
+                                    var quantityInput = document.getElementById('quantity_650d2bef84a81');
+                                    var currentValue = parseInt(quantityInput.value);
+                                    var maxValue = parseInt(quantityInput.getAttribute('max'));
+
+                                    if (currentValue < maxValue) {
+                                        quantityInput.value = currentValue + 1;
+                                    }
+                                }
+
+                                function decrementQuantityPD() {
+                                    var quantityInput = document.getElementById('quantity_650d2bef84a81');
+                                    var currentValue = parseInt(quantityInput.value);
+                                    var minValue = parseInt(quantityInput.getAttribute('min'));
+
+                                    if (currentValue > minValue) {
+                                        quantityInput.value = currentValue - 1;
+                                    }
+                                }
+                            </script>
+
+
+
+
+
+                            <!-- <label for="">Size:</label>
+                                <select name="" id="">
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="xxl">XXL</option>
+                                </select>
+                                <div class="quantity-selector">
+                                    <button class="quantyi-dec">-</button>
+                                    <p class="quantity">0</p>
+                                    <button class="quantity-inc">+</button>
+                                </div>
+
+
+
+                                <button class="btn">Add to Cart</button> -->
+
+
+
+
+
+
+
+
+
+
                         </div>
                     </div>
                     <hr />
