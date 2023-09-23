@@ -10,9 +10,25 @@ session_start();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="../CSS/style.css" />
-    <link rel="stylesheet" href="../CSS/products.css" />
+    <link rel="stylesheet" href="./CSS/style.css" />
+    <link rel="stylesheet" href="./CSS/products.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        .showcase-pricing {
+            margin: 30px 0;
+            display: flex;
+            gap: 40px;
+        }
+
+        .actual-price {
+            color: gray;
+            text-decoration: line-through;
+        }
+
+        .discounted-price {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
@@ -197,7 +213,7 @@ session_start();
         </footer>
     </div>
 
-    <script src="../scripts/index.js"></script>
+    <script src="./scripts/index.js"></script>
 </body>
 
 </html>

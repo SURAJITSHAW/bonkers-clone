@@ -98,7 +98,7 @@
     ?>
 
     <div class="nav-brand">
-        <a href="../index.php">
+        <a href="index.php">
             <img src="https://assets.bonkerscorner.com/uploads/2021/03/12015638/bonkers_corner_logo-new_vertical.svg" alt="" height="25px" />
         </a>
     </div>
@@ -155,6 +155,11 @@
             while ($row = mysqli_fetch_assoc($result)) {
                 $product_id = $row['p_id'];
                 $quantity = 0; // Default quantity
+                $discountedPriceVarName = 'discountedPrice_' . $row['p_id']; // Create a unique variable name for each product
+                $discountedPrice = $row['p_price'] - ($row['p_price'] * 15 / 100);
+
+                // Store the discounted price in a JavaScript variable with a unique name
+                echo "<script>var {$discountedPriceVarName} = {$discountedPrice};</script>";
 
                 // Check if the product ID exists in the session
                 foreach ($_SESSION['cart'] as $cartItem) {
@@ -202,8 +207,10 @@
                                     ?>
                                 </p>
                                 <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
-                                <?php $temp_total = $quantity * $discountedPrice;
-                                echo '₹' . $temp_total; ?>
+                                    <?php
+                                    $temp_total = $quantity * $discountedPrice;
+                                    echo '₹' .
+                                        $quantity * $discountedPrice; ?>
                                 </p>
                             </div>
                         </div>
@@ -248,7 +255,7 @@
         <?php foreach ($_SESSION['cart'] as $cartItem) : ?>
             var productId = <?php echo $cartItem['p_id']; ?>;
             var quantity = parseInt(document.getElementById('quantity_' + productId).value);
-            var price = parseFloat(<?php echo $discountedPrice; ?>); // Replace with the actual price from your database
+            var price = parseFloat(window['discountedPrice_' + productId]); // Access the discounted price using the variable name
 
             var tempTotal = quantity * price;
             total += tempTotal;
@@ -258,6 +265,7 @@
 
         document.getElementById('total').textContent = '₹' + total.toFixed(2);
     }
+
 
     function incrementQuantity(productId) {
         var quantityInput = document.getElementById('quantity_' + productId);

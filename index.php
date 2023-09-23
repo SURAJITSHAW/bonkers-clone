@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 
 ?>
@@ -18,158 +18,31 @@ session_start();
 
     <!-- bootstrap link -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        .showcase-pricing {
+            margin: 30px 0;
+            display: flex;
+            gap: 40px;
+        }
+
+        .actual-price {
+            color: gray;
+            text-decoration: line-through;
+        }
+
+        .discounted-price {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <!-- Header -->
-        <header class="nav-bar">
-            <!-- Side menu -->
-            <div class="burger-button">
-                <i class="bi bi-list"></i>
-            </div>
-            <div class="nav-list">
-                <div class="nav-listHead">
-                    <div class="close-nav"><i class="bi bi-x-lg"></i></div>
-                </div>
-                <div>
-                    <ul class="side-nav">
-                        <li>
-                            <a href="./pages/products.php">
-                                <strong> MEN </strong>
-                            </a>
-                            <ul>
-                                <li>
-                                    <a href="./pages/products.php">
-                                        Top
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./pages/products.php">
-                                        T-Shirt
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./pages/products.php">
-                                        Mens Jeans
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+        <?php
+        include "navbar.php";
+        ?>
 
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Normal Navigation -->
-            <?php
-
-            $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-            $sql = "SELECT * FROM category";
-            // $sql = "SELECT * FROM subcategory s JOIN category c ON s.category_id = c.category_id";
-            $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
-
-            if (mysqli_num_rows($result) > 0) {
-
-
-            ?>
-                <div class="nav-links">
-                    <ul class="nav-menu">
-                        <?php
-                        while ($row = mysqli_fetch_assoc($result)) {
-                        ?>
-                            <a href="./pages/products.php?cat=<?php echo $row['category_id']; ?>">
-                                <li>
-                                    <?php
-                                    $id = $row['category_id'];
-                                    $sql1 = "SELECT * FROM subcategory WHERE category_id = {$id}";
-                                    $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-
-
-                                    echo $row['category_name'];
-                                    echo mysqli_num_rows($result1) > 0 ? '<i class="bi bi-chevron-down"></i>' : '';
-
-
-
-
-                                    if (mysqli_num_rows($result1) > 0) {
-                                        echo '<ul class="drop-down">';
-                                        while ($row1 = mysqli_fetch_assoc($result1)) {
-                                    ?>
-
-                                <li>
-                                    <a href="./pages/products.php?sub=<?php echo $row1['id']; ?>"> <?php echo $row1['name']; ?> </a>
-                                </li>
-                        <?php
-                                        }
-                                        echo '</ul>';
-                                    }
-                        ?>
-
-
-                        </li>
-                            </a>
-                        <?php
-                        }
-                        ?>
-                        <a href="./pages/contacts.php">
-                            <li>CONTACT</li>
-                        </a>
-
-                    </ul>
-                </div>
-            <?php
-            }
-            ?>
-
-            <div class="nav-brand">
-                <a href="index.php">
-                    <img src="https://assets.bonkerscorner.com/uploads/2021/03/12015638/bonkers_corner_logo-new_vertical.svg" alt="" height="25px" />
-                </a>
-            </div>
-
-            <div class="nav-cart">
-                <a href="./pages/profile.php"><i class="bi bi-person"></i></a><a class="cart-button"><i class="bi bi-cart3"></i></a>
-            </div>
-        </header>
-
-        <!-- Mini Cart -->
-        <div class="mini-cart">
-            <div class="cart-head">
-                <h2>Cart</h2>
-                <div class="close-cart">
-                    <i class="bi bi-x-lg"></i>
-                </div>
-            </div>
-            <hr style="width: 80%; margin: 0 auto" />
-            <ul class="list-cart">
-                <li>
-                    <div class="carted-item">
-                        <div>
-                            <img src="./assets/images/product/Bonkerscorner_happy-place-baby-tee_01-768x1152.jpg" height="100px" />
-                        </div>
-                        <div class="carted-item-details">
-                            <div class="carted-item-title">
-                                <p>Productg Name</p>
-                                <i class="bi bi-x"></i>
-                            </div>
-                            <div class="minicart-product-quantity">
-                                <button>-</button>
-                                <p>0</p>
-                                <button>+</button>
-                            </div>
-                            <p>499</p>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <div class="checkout">
-                <div class="total">0</div>
-                <div><a href="./pages/cart-page.php">View Cart</a></div>
-            </div>
-        </div>
-
-        <!-- Home Page Main section -->
         <main>
             <!-- carousel Section -->
             <div class="carousel" data-carousel>
@@ -188,17 +61,17 @@ session_start();
 
 
                     <li class="slide">
-                        <a href="./pages/products.php?cat=16">
+                        <a href="products.php?cat=16">
                             <img src="./assets/images/landing/Marvel_landing_web_banner.jpg" alt="" />
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="./pages/products.php?cat=10">
+                        <a href="products.php?cat=10">
                             <img src="./assets/images/landing/webbanner_mens.jpg" alt="" />
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="./pages/products.php?cat=12">
+                        <a href="products.php?cat=12">
                             <img src="./assets/images/landing/webbanner_womens.jpg" alt="" />
                         </a>
                     </li>
@@ -207,33 +80,33 @@ session_start();
 
             <!-- Gender Category Section -->
             <div class="gender">
-                <a href="./pages/products.php?cat=12">
+                <a href="products.php?cat=12">
                     <img src="./assets/images/womens_5-1.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php?cat=10">
+                <a href="products.php?cat=10">
                     <img src="./assets/images/mens_2-1-1.jpg" alt="" />
                 </a>
             </div>
 
             <!-- Featured Collection section -->
             <div class="collection">
-                <a href="./pages/products.php">
+                <a href="products.php">
                     <img src="./assets/images/10.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php?cat=15">
+                <a href="products.php?cat=15">
                     <img src="./assets/images/9.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php?sub=28">
+                <a href="products.php?sub=28">
                     <img src="./assets/images/8.jpg" alt="" />
                 </a>
-                <a href="./pages/products.php?cat=16">
+                <a href="products.php?cat=16">
                     <img src="./assets/images/7.jpg" alt="" />
                 </a>
             </div>
 
             <!-- Hero Offer section -->
             <div class="hero-section">
-                <a href="./pages/products.php">
+                <a href="products.php">
                     <img src="./assets/images/offergif-1.gif" alt="" />
                 </a>
             </div>
@@ -245,42 +118,42 @@ session_start();
                     <div class="swiper mySwiper">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/mensOST.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/womensOST.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/mensbasic.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/womensbasic.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/mensbottom.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/womensbottom.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/menssweat.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
                             <div class="swiper-slide">
-                                <a href="./pages/products.php">
+                                <a href="products.php">
                                     <img src="./assets/images/categories/womenssweat.jpg" alt="" class="category-image" />
                                 </a>
                             </div>
@@ -295,7 +168,7 @@ session_start();
                 <div class="section-title">Best Sellers</div>
                 <div class="product-showcase">
                     <!-- Product Card component -->
-                    <a href="./pages/product-details.php">
+                    <a href="product-details.php">
                         <div class="product-card">
                             <img src="./assets/images/product/Bonkerscorner_black_wide_leg_sweatpants_8660-1-768x1152.jpg" alt="" />
                             <div class="product-data">
@@ -318,7 +191,7 @@ session_start();
                             </div>
                         </div>
                     </a>
-                    <a href="./pages/product-details.php">
+                    <a href="product-details.php">
                         <div class="product-card">
                             <img src="./assets/images/product/Bonkerscorner_blue-top_05-768x1152.jpg" alt="" />
                             <div class="product-data">
@@ -341,7 +214,7 @@ session_start();
                             </div>
                         </div>
                     </a>
-                    <a href="./pages/product-details.php">
+                    <a href="product-details.php">
                         <div class="product-card">
                             <img src="./assets/images/product/20230725_060209000_iOS-4-768x1152.jpg" alt="" />
                             <div class="product-data">
@@ -364,7 +237,7 @@ session_start();
                             </div>
                         </div>
                     </a>
-                    <a href="./pages/product-details.php">
+                    <a href="product-details.php">
                         <div class="product-card">
                             <img src="./assets/images/product/Bonkerscorner_green-derss_03-1-768x1152.jpg" alt="" />
                             <div class="product-data">
