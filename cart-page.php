@@ -48,7 +48,7 @@
                         <tr>
                             <td>
                                 <div class="product-details">
-                                    <img src="../assets/images/product/Bonkerscorner_yellow-shorts_02-768x1152.jpg" height="200px" />
+                                    <img src="./assets/images/product/Bonkerscorner_yellow-shorts_02-768x1152.jpg" height="200px" />
                                     <div class="product-action">
                                         <h2>Product name</h2>
                                         <br />

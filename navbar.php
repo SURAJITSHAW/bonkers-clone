@@ -170,7 +170,7 @@
                 }
     ?>
 
-                <li style="margin: 5px; padding: 10px; border-bottom: #333;">
+                <li data-product-id="<?php echo $row['p_id']; ?>" style=" margin: 5px; padding: 10px; border-bottom: #333;">
                     <div class="carted-item">
                         <div>
                             <img src="<?php echo '../../bonkerscorner.com/uploads/' . $row['p_img']; ?>" height="100px" />
@@ -178,7 +178,9 @@
                         <div class="carted-item-details">
                             <div class="carted-item-title">
                                 <p><?php echo $row['p_name']; ?></p>
-                                <i class="bi bi-x"></i>
+                                <!-- Add an "X" button with a click event -->
+                                <i style="cursor: pointer;" class="bi bi-x" onclick="removeCartItem(<?php echo $row['p_id']; ?>)"></i>
+
                             </div>
                             <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
                                 <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
@@ -235,6 +237,29 @@
 </div>
 
 <script>
+    function removeCartItem(productId) {
+        // Send an AJAX request to remove the item from the session
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'remove_item.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Item removed successfully from the session
+                // You can add any additional handling here if needed
+
+                // Remove the item from the mini-cart display
+                var cartItem = document.querySelector('li[data-product-id="' + productId + '"]');
+                if (cartItem) {
+                    cartItem.remove();
+                }
+
+                // Update the total
+                updateTotal();
+            }
+        };
+        xhr.send('product_id=' + productId);
+    }
+
     function updateSession(productId, quantity) {
         // Send an AJAX request to a PHP script to update the session
         var xhr = new XMLHttpRequest();
