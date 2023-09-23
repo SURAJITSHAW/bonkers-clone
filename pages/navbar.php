@@ -201,8 +201,10 @@
                                     echo "₹<span>{$discountedPrice}</span>"
                                     ?>
                                 </p>
-                                <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>"><?php $temp_total = $quantity * $discountedPrice;
-                                                                                                                        echo '₹' . $temp_total; ?></p>
+                                <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
+                                <?php $temp_total = $quantity * $discountedPrice;
+                                echo '₹' . $temp_total; ?>
+                                </p>
                             </div>
                         </div>
                     </div>
