@@ -35,8 +35,117 @@ session_start();
     <div class="container">
         <!-- Header -->
         <?php
-        include "navbar.php";
+        // include "navbar.php";
         ?>
+
+        <header class="nav-bar">
+            <!-- Side menu -->
+            <div class="burger-button">
+                <i class="bi bi-list"></i>
+            </div>
+            <div class="nav-list">
+                <div class="nav-listHead">
+                    <div class="close-nav"><i class="bi bi-x-lg"></i></div>
+                </div>
+                <div>
+                    <ul class="side-nav">
+                        <li>
+                            <a href="products.php">
+                                <strong> MEN </strong>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="products.php">
+                                        Top
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="products.php">
+                                        T-Shirt
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="products.php">
+                                        Mens Jeans
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Normal Navigation -->
+            <?php
+
+            $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+            $sql = "SELECT * FROM category";
+            // $sql = "SELECT * FROM subcategory s JOIN category c ON s.category_id = c.category_id";
+            $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+
+            if (mysqli_num_rows($result) > 0) {
+
+
+            ?>
+                <div class="nav-links">
+                    <ul class="nav-menu">
+                        <?php
+                        while ($row = mysqli_fetch_assoc($result)) {
+                        ?>
+                            <a href="products.php?cat=<?php echo $row['category_id']; ?>">
+                                <li>
+                                    <?php
+                                    $id = $row['category_id'];
+                                    $sql1 = "SELECT * FROM subcategory WHERE category_id = {$id}";
+                                    $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
+
+
+                                    echo $row['category_name'];
+                                    echo mysqli_num_rows($result1) > 0 ? '<i class="bi bi-chevron-down"></i>' : '';
+
+
+
+
+                                    if (mysqli_num_rows($result1) > 0) {
+                                        echo '<ul class="drop-down">';
+                                        while ($row1 = mysqli_fetch_assoc($result1)) {
+                                    ?>
+
+                                <li>
+                                    <a href="products.php?sub=<?php echo $row1['id']; ?>"> <?php echo $row1['name']; ?> </a>
+                                </li>
+                        <?php
+                                        }
+                                        echo '</ul>';
+                                    }
+                        ?>
+
+
+                        </li>
+                            </a>
+                        <?php
+                        }
+                        ?>
+                        <a href="contacts.php">
+                            <li>CONTACT</li>
+                        </a>
+
+                    </ul>
+                </div>
+            <?php
+            }
+            ?>
+
+            <div class="nav-brand">
+                <a href="index.php">
+                    <img src="https://assets.bonkerscorner.com/uploads/2021/03/12015638/bonkers_corner_logo-new_vertical.svg" alt="" height="25px" />
+                </a>
+            </div>
+            <div class="nav-cart" style="display: flex; align-items: center; background-color: #f5f5f5; padding: 10px 20px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); max-width: 100px;">
+                <a href="profile.php" style="text-decoration: none; color: #333; font-size: 24px; margin: 0 10px;"><i class="bi bi-person"></i></a>
+            </div>
+        </header>
 
         <main>
             <div class="cart-body">
@@ -51,7 +160,9 @@ session_start();
                         </tr>
                     </thead>
                     <?php
+
                     if (isset($_SESSION['cart'])) {
+                        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
                         $product_id = array_column($_SESSION['cart'], 'p_id');
                         $sql = "SELECT * FROM product WHERE p_id IN (" . implode(",", $product_id) . ")";
                         $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
@@ -143,6 +254,11 @@ session_start();
                     ?>
 
                 </table>
+
+                <hr>
+
+                <h3 style="padding-left: 93%; margin-top: 5px;"><span style="font-weight: boldest; color: red"><?php echo '₹' . $total; ?>
+                    </span></h3>
                 <div class="proceed-section">
                     <div class="apply-coupon">
                         <input type="text" placeholder="Apply Coupon" />
