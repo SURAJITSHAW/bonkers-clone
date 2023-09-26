@@ -146,8 +146,14 @@
     <?php
     if (isset($_SESSION['cart'])) {
         $product_id = array_column($_SESSION['cart'], 'p_id');
-        $sql = "SELECT * FROM product WHERE p_id IN (" . implode(",", $product_id) . ")";
-        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+        if (!empty($product_id)) {
+            $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(',', $product_id) . ')';
+            $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+        } else {
+            // Handle the case when $product_id is empty
+            echo '<h2>Cart is empty</h2>';
+        }
+
 
         if (mysqli_num_rows($result) > 0) {
             $total = 0;
