@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    header('location: login.php');
+    exit;
+}
 
 ?>
 
@@ -164,7 +168,7 @@ session_start();
                     if (isset($_SESSION['cart'])) {
                         $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
                         $product_id = array_column($_SESSION['cart'], 'p_id');
-                        
+
                         if (!empty($product_id)) {
                             $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(",", $product_id) . ')';
                             $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
@@ -190,7 +194,7 @@ session_start();
                                     if ($cartItem['p_id'] == $product_id) {
                                         $quantity = $cartItem['quantity'];
                                         break; // Found the product in the session, no need to continue searching
-                                    } 
+                                    }
                                 }
                     ?>
 
@@ -254,8 +258,8 @@ session_start();
 
                 <hr>
 
-                <h3 style="padding-left: 93%; margin-top: 5px;"><span style="font-weight: boldest; color: red">₹' .$total.
-                    '</span></h3>';
+                <h3 style="padding-left: 93%; margin-top: 5px;"><span style="font-weight: boldest; color: red">₹' . $total .
+                                '</span></h3>';
                         } else {
                             echo '<h2>Cart is empty</h2>';
                         }
@@ -264,15 +268,15 @@ session_start();
                     }
                     ?>
 
-                <div class="proceed-section">
-                    <div class="apply-coupon">
-                        <input type="text" placeholder="Apply Coupon" />
-                        <input type="submit" value="Apply" class="btn" />
+                    <div class="proceed-section">
+                        <div class="apply-coupon">
+                            <input type="text" placeholder="Apply Coupon" />
+                            <input type="submit" value="Apply" class="btn" />
+                        </div>
+                        <a href="./proceed.php">
+                            <button class="btn">Proceed</button>
+                        </a>
                     </div>
-                    <a href="./proceed.php">
-                        <button class="btn">Proceed</button>
-                    </a>
-                </div>
             </div>
         </main>
 

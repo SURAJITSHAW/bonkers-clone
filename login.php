@@ -1,12 +1,52 @@
 <?php
+$conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
 
 $login = false;
 $showError = false;
+$showAlert = false;
+
+if (isset($_POST['register'])) {
+
+    $email = $_POST['regEmail'];
+    $pass = $_POST['regPass'];
+    $cpass = $_POST['regCPass'];
+
+
+    //check whether the email already exists
+    $existsQuery = "SELECT email FROM users WHERE email='$email'";
+    $res = mysqli_query($conn, $existsQuery);
+
+    if (mysqli_num_rows($res) > 0) {
+        $showError = "An account with this email address already exists.";
+    } else {
+        if (strlen($pass) < 6) {
+            $showError = "Password must be at least 6 characters long.";
+        } elseif (!preg_match("/[!@#$%^&*()_+[\]{};':\"\\|,.<>\/?]+/", $pass)) {
+            $showError = "Password must contain at least one special character.";
+        } else {
+            // Password is valid; you can proceed to use/store it securely.
+            // For example, you can hash and store it in a database.
+            if ($pass == $cpass) {
+                $hash = password_hash($pass, PASSWORD_DEFAULT);
+                $sql = "INSERT INTO `users` (`email`, `pass`, `created_at`) VALUES ('$email', '$hash', current_timestamp())";
+
+                $result = mysqli_query($conn, $sql);
+
+                if ($result) {
+                    $showAlert = true;
+                    header('location: login.php');
+                }
+            } else {
+                $showError = "Passwords do not match";
+            }
+        }
+    }
+}
 
 if (isset($_POST['login'])) {
-    $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-    $email = $_POST['email'];
-    $pass = $_POST['pass'];
+
+    $email = $_POST['loginEmail'];
+    $pass = $_POST['loginPass'];
 
 
     $sql = "SELECT * FROM users WHERE email='$email'";
@@ -22,7 +62,7 @@ if (isset($_POST['login'])) {
             if (password_verify($pass, $row['pass'])) {
                 $login = true;
                 session_start();
-                $_SESSION['username'] = $row['fname'];
+                $_SESSION['email'] = $row['email'];
                 $_SESSION['loggedin'] = true;
                 header('location: index.php');
             } else {
@@ -46,6 +86,68 @@ if (isset($_POST['login'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login and Register</title>
     <style>
+        .custom-alert {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .close-btn {
+            float: right;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Style for the custom alert box */
+        .custom-alert {
+            position: relative;
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        /* Style for the close button (×) */
+        .close-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Style for the close button hover state */
+        .close-btn:hover {
+            background-color: #e24343;
+            color: #fff;
+        }
+
+        /* Style for the "Error!" text */
+        .custom-alert strong {
+            font-weight: bold;
+        }
+
+        /* Style for the error alert */
+        .custom-alert.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+
         body {
             font-family: Arial, sans-serif;
             background-image: url('./assets//bg.jpg');
@@ -55,6 +157,7 @@ if (isset($_POST['login'])) {
             background-attachment: fixed;
             margin: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
@@ -199,9 +302,35 @@ if (isset($_POST['login'])) {
             margin-right: 10px;
         }
     </style>
+
 </head>
 
 <body>
+
+    <?php
+
+    if ($showAlert) {
+        echo '<div class="custom-alert success">
+    <span class="close-btn" onclick="closeAlert(this)">&times;</span>
+    <strong>Success!</strong> Your account is now created, and you can log in.
+</div>';
+    }
+
+
+    if ($showError) {
+        echo '<div class="custom-alert error">
+    <span class="close-btn" onclick="closeAlert(this)">&times;</span>
+    <strong>Error!</strong>  ' . $showError . '
+    </div>';
+    }
+
+    
+    ?>
+    <script>
+        function closeAlert(element) {
+            element.parentElement.style.display = 'none';
+        }
+    </script>
 
 
     <div class="container">
@@ -209,6 +338,9 @@ if (isset($_POST['login'])) {
             <a href="#login-tab" class="active">Login</a>
             <a href="#register-tab">Register</a>
         </div>
+
+
+
         <form action="" method="POST" class="tab-content" id="login-tab">
             <h2>Login</h2>
             <!-- ... rest of your login form ... -->
@@ -222,6 +354,13 @@ if (isset($_POST['login'])) {
                 <button type="submit" name="login" class="btn">Login</button>
             </div>
         </form>
+
+
+
+
+
+
+
         <form action="" method="POST" class="tab-content" id="register-tab" style="display: none;">
             <h2>Register</h2>
             <!-- ... rest of your registration form ... -->
@@ -231,8 +370,11 @@ if (isset($_POST['login'])) {
             <div class="input-container">
                 <input name="regPass" type="password" placeholder="Password">
             </div>
+            <div class="input-container">
+                <input name="regCPass" type="password" placeholder="Confirm Password">
+            </div>
             <div class="btn-container">
-                <button type="submit" name="reg" class="btn">Register</button>
+                <button type="submit" name="register" class="btn">Register</button>
             </div>
         </form>
         <hr>

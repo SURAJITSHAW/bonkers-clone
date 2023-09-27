@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    header('location: login.php');
+    exit;
+}
 
 ?>
 
@@ -63,7 +67,7 @@ session_start();
                 <div class="tab-content">
                     <div class="content active">
                         <div>
-                            <p>hello <strong>User</strong></p>
+                            <p>Hello <strong><?php echo $_SESSION['email']; ?></strong>👋👋</p>
                         </div>
                     </div>
                     <div class="content">
@@ -144,7 +148,7 @@ session_start();
                         </div>
                     </div>
                     <div class="content">The Wishlist is empty</div>
-                    <div class="content">Log Out</div>
+                    <a href="logout.php" class="content btn" style="width: 10%;">Log Out</a>
                 </div>
             </section>
         </main>

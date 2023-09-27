@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    header('location: login.php');
+    exit;
+}
 
 ?>
 
@@ -150,8 +154,8 @@ session_start();
                             </tr>
                             <?php
                             // Calculate CGST and SGST amounts
-                            $cgstAmount = ($total * 9) / 100;
-                            $sgstAmount = ($total * 9) / 100;
+                            $cgstAmount = ($total * 6) / 100;
+                            $sgstAmount = ($total * 6) / 100;
 
                             // Total GST amount (sum of CGST and SGST)
                             $totalGstAmount = $cgstAmount + $sgstAmount;
@@ -160,13 +164,13 @@ session_start();
                                 <td>CGST</td>
                                 <td><?php
                                     $cgst = number_format($cgstAmount, 2);
-                                    echo $cgstAmount;
+                                    echo $cgst;
                                     ?></td>
                             </tr>
                             <tr>
                                 <td>SGST</td>
                                 <td><?php $sgst = number_format($sgstAmount, 2);
-                                    echo $sgstAmount;  ?></td>
+                                    echo $sgst;  ?></td>
                             </tr>
                         </tbody>
                         <tfoot>
