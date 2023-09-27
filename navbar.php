@@ -138,7 +138,7 @@
     <div class="cart-head">
         <h2>Cart</h2>
         <div class="close-cart">
-            <i class="bi bi-x-lg"></i>
+            <i class="bi bi-x-lg"></i> 
         </div>
     </div>
     <hr style="width: 80%; margin: 0 auto;" />

@@ -313,7 +313,7 @@ if (isset($_POST['add-cart'])) {
         }
 
 ?>
-<div class="featured-products">
+<!-- <div class="featured-products">
     <h3>You may also like</h3>
     <div class="recomended-section">
         <a href="./product-details.php">
@@ -340,7 +340,7 @@ if (isset($_POST['add-cart'])) {
             </div>
         </a>
     </div>
-</div>
+</div> -->
 </main>
 
 <footer class="footer">

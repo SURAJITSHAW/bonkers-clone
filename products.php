@@ -74,21 +74,39 @@ session_start();
 
                         <?php
 
+                        // Define your SQL query here
                         if (isset($_GET['sub'])) {
                             $subCat = $_GET['sub'];
 
                             $sql = "SELECT * FROM product AS p JOIN category AS c 
-                            ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
+                    ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
                         } else  if (isset($_GET['cat'])) {
                             $cat = $_GET['cat'];
 
                             $sql = "SELECT * FROM product AS p JOIN category AS c 
-                            ON p.category_id = c.category_id WHERE p.category_id='$cat'";
+                    ON p.category_id = c.category_id WHERE p.category_id='$cat'";
                         } else {
                             $sql = "SELECT * FROM 
-                            product AS p JOIN category AS c 
-                            ON p.category_id = c.category_id";
+                    product AS p JOIN category AS c 
+                    ON p.category_id = c.category_id";
                         }
+
+                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+
+                        // Count the total number of products
+                        $totalCount = mysqli_num_rows($result);
+
+                        // Number of products to display per page
+                        $productsPerPage = 8;
+
+                        // Current page, default to 1 if "page" parameter is not set
+                        $currentpage = isset($_GET['page']) ? $_GET['page'] : 1;
+
+                        // Calculate the OFFSET for SQL query
+                        $offset = ($currentpage - 1) * $productsPerPage;
+
+                        // Modify your SQL query to retrieve a specific set of products
+                        $sql .= " LIMIT $offset, $productsPerPage";
 
                         $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
 
@@ -138,27 +156,28 @@ session_start();
                         }
                         ?>
 
-
-
-
-
-
-
                     </div>
                     <div class="products-pagination">
                         <ul>
-                            <li class="pagination-button">
-                                <i class="bi bi-arrow-left"></i>
-                            </li>
-                            <li class="page-number">1</li>
-                            <li class="page-number">2</li>
-                            <li class="page-number">3</li>
-                            <li class="page-number">4</li>
-                            <li class="page-number">5</li>
-                            <li class="page-number">6</li>
-                            <li class="pagination-button">
-                                <i class="bi bi-arrow-right"></i>
-                            </li>
+                            <?php
+                            // Calculate the total number of pages
+                            $totalPages = ceil($totalCount / $productsPerPage);
+
+                            // Display "Previous" button
+                            if ($currentpage > 1) {
+                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage - 1) . '"><i class="bi bi-arrow-left"></i></a></li>';
+                            }
+
+                            // Display page numbers
+                            for ($i = 1; $i <= $totalPages; $i++) {
+                                echo '<li class="page-number"><a href="?page=' . $i . '">' . $i . '</a></li>';
+                            }
+
+                            // Display "Next" button
+                            if ($currentpage < $totalPages) {
+                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage + 1) . '"><i class="bi bi-arrow-right"></i></a></li>';
+                            }
+                            ?>
                         </ul>
                     </div>
                 </section>
