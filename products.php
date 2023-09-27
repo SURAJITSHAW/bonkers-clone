@@ -59,13 +59,14 @@ session_start();
                                 <div class="product-sorting-selection">
                                     <label for="">Sort By: </label>
                                     <select name="sort" id="sort-select">
-                                        <option value="relevance">Relevance</option>
-                                        <option value="price-low-to-high">Price Low to High</option>
-                                        <option value="price-high-to-low">Price High to Low</option>
-                                        <option value="newest-first">Newest First</option>
+                                        <option value="relevance" <?php if (isset($_GET['sort']) && $_GET['sort'] === 'relevance') echo 'selected'; ?>>Relevance</option>
+                                        <option value="price-low-to-high" <?php if (isset($_GET['sort']) && $_GET['sort'] === 'price-low-to-high') echo 'selected'; ?>>Price Low to High</option>
+                                        <option value="price-high-to-low" <?php if (isset($_GET['sort']) && $_GET['sort'] === 'price-high-to-low') echo 'selected'; ?>>Price High to Low</option>
+                                        <option value="newest-first" <?php if (isset($_GET['sort']) && $_GET['sort'] === 'newest-first') echo 'selected'; ?>>Newest First</option>
                                     </select>
                                 </div>
                             </form>
+
                             <script>
                                 // JavaScript code to handle sorting without changing the URL
                                 document.getElementById("sort-select").addEventListener("change", function() {
