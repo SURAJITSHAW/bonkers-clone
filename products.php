@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 ?>
 
 <!DOCTYPE html>
@@ -54,61 +55,108 @@ session_start();
                             <div class="product-showing">
                                 Showing Products
                             </div>
-                            <div class="product-sorting-selection">
-                                <label for="">Sort By: </label>
-                                <select placeholder="Sort By">
-                                    <option value="">Relevance</option>
-                                    <option value="">
-                                        Price low to high
-                                    </option>
-                                    <option value="">
-                                        Price high to low
-                                    </option>
-                                    <option value="">Newest first</option>
-                                </select>
-                            </div>
+                            <form id="sort-form" method="GET">
+                                <div class="product-sorting-selection">
+                                    <label for="">Sort By: </label>
+                                    <select name="sort" id="sort-select">
+                                        <option value="relevance">Relevance</option>
+                                        <option value="price-low-to-high">Price Low to High</option>
+                                        <option value="price-high-to-low">Price High to Low</option>
+                                        <option value="newest-first">Newest First</option>
+                                    </select>
+                                </div>
+                            </form>
+                            <script>
+                                // JavaScript code to handle sorting without changing the URL
+                                document.getElementById("sort-select").addEventListener("change", function() {
+                                    const selectedSort = document.getElementById("sort-select").value;
+                                    const currentURL = window.location.href;
+                                    const newURL = updateQueryStringParameter(currentURL, "sort", selectedSort);
+                                    window.location.href = newURL;
+                                });
+
+                                // Function to update the query string parameter in the URL
+                                function updateQueryStringParameter(uri, key, value) {
+                                    const re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                                    const separator = uri.indexOf("?") !== -1 ? "&" : "?";
+                                    if (uri.match(re)) {
+                                        return uri.replace(re, "$1" + key + "=" + value + "$2");
+                                    } else {
+                                        return uri + separator + key + "=" + value;
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
+                    <?php
+                    // Number of products to display per page
+                    $productsPerPage = 8;
+
+                    // Current page, default to 1 if "page" parameter is not set
+                    $currentpage = isset($_GET['page']) ? $_GET['page'] : 1;
+
+                    // Default sorting option
+                    $defaultSort = "relevance";
+
+                    // Get the selected sorting option from the form (if submitted)
+                    if (isset($_GET['sort'])) {
+                        $sortOption = $_GET['sort'];
+                    } else {
+                        $sortOption = $defaultSort;
+                    }
+
+                    // Define your SQL query for product retrieval based on sorting option
+                    if (isset($_GET['sub'])) {
+                        $subCat = $_GET['sub'];
+
+                        $sql = "SELECT * FROM product AS p JOIN category AS c 
+                                ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
+                    } else if (isset($_GET['cat'])) {
+                        $cat = $_GET['cat'];
+
+                        $sql = "SELECT * FROM product AS p JOIN category AS c 
+                                ON p.category_id = c.category_id WHERE p.category_id='$cat'";
+                    } else {
+                        $sql = "SELECT * FROM 
+                                product AS p JOIN category AS c 
+                                ON p.category_id = c.category_id";
+                    }
+
+                    // Handle sorting based on the selected option
+                    switch ($sortOption) {
+                        case "price-low-to-high":
+                            $sql .= " ORDER BY p.p_price ASC";
+                            break;
+                        case "price-high-to-low":
+                            $sql .= " ORDER BY p.p_price DESC";
+                            break;
+                        case "newest-first":
+                            $sql .= " ORDER BY p.p_id DESC";
+                            break;
+                        default:
+                            // For "relevance" or unknown options, no specific sorting is applied
+                            break;
+                    }
+
+                    // Count the total number of products
+                    $resultCount = mysqli_query($conn, $sql);
+                    $totalCount = mysqli_num_rows($resultCount);
+
+                    // Calculate the OFFSET for SQL query
+                    $offset = ($currentpage - 1) * $productsPerPage;
+
+                    // Modify your SQL query to retrieve a specific set of products
+                    $sql .= " LIMIT $offset, $productsPerPage";
+
+                    $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+                    ?>
+
+
                     <div class="product-listing">
-
-
                         <?php
 
-                        // Define your SQL query here
-                        if (isset($_GET['sub'])) {
-                            $subCat = $_GET['sub'];
 
-                            $sql = "SELECT * FROM product AS p JOIN category AS c 
-                    ON p.category_id = c.category_id WHERE p.sub_category_id='$subCat'";
-                        } else  if (isset($_GET['cat'])) {
-                            $cat = $_GET['cat'];
-
-                            $sql = "SELECT * FROM product AS p JOIN category AS c 
-                    ON p.category_id = c.category_id WHERE p.category_id='$cat'";
-                        } else {
-                            $sql = "SELECT * FROM 
-                    product AS p JOIN category AS c 
-                    ON p.category_id = c.category_id";
-                        }
-
-                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
-
-                        // Count the total number of products
-                        $totalCount = mysqli_num_rows($result);
-
-                        // Number of products to display per page
-                        $productsPerPage = 8;
-
-                        // Current page, default to 1 if "page" parameter is not set
-                        $currentpage = isset($_GET['page']) ? $_GET['page'] : 1;
-
-                        // Calculate the OFFSET for SQL query
-                        $offset = ($currentpage - 1) * $productsPerPage;
-
-                        // Modify your SQL query to retrieve a specific set of products
-                        $sql .= " LIMIT $offset, $productsPerPage";
-
-                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+                        // Your product listing code
 
                         if (mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
@@ -148,15 +196,17 @@ session_start();
                                     </div>
                                 </a>
 
-
-
-
                         <?php
                             }
                         }
                         ?>
 
                     </div>
+
+
+
+
+                    <!-- Your HTML code for pagination -->
                     <div class="products-pagination">
                         <ul>
                             <?php
@@ -165,17 +215,17 @@ session_start();
 
                             // Display "Previous" button
                             if ($currentpage > 1) {
-                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage - 1) . '"><i class="bi bi-arrow-left"></i></a></li>';
+                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage - 1) . '&sort=' . $sortOption . '"><i class="bi bi-arrow-left"></i></a></li>';
                             }
 
                             // Display page numbers
                             for ($i = 1; $i <= $totalPages; $i++) {
-                                echo '<li class="page-number"><a href="?page=' . $i . '">' . $i . '</a></li>';
+                                echo '<li class="page-number"><a href="?page=' . $i . '&sort=' . $sortOption . '">' . $i . '</a></li>';
                             }
 
                             // Display "Next" button
                             if ($currentpage < $totalPages) {
-                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage + 1) . '"><i class="bi bi-arrow-right"></i></a></li>';
+                                echo '<li class="pagination-button"><a href="?page=' . ($currentpage + 1) . '&sort=' . $sortOption . '"><i class="bi bi-arrow-right"></i></a></li>';
                             }
                             ?>
                         </ul>
