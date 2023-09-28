@@ -237,7 +237,14 @@
     ?>
 
     <div class="checkout">
-        <div id="total" style="font-weight: bolder"><?php echo '₹' . $total; ?></div>
+        <div id="total" style="font-weight: bolder"><?php
+        if (isset($total)) {
+            echo '₹' . $total;
+        } else {
+            echo '₹' . '0.00';
+        }
+
+        ?></div>
         <div><a href="cart-page.php">View Cart</a></div>
     </div>
 </div>

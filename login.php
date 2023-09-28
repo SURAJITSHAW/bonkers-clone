@@ -63,6 +63,7 @@ if (isset($_POST['login'])) {
                 $login = true;
                 session_start();
                 $_SESSION['email'] = $row['email'];
+                $_SESSION['userid'] = $row['user_id'];
                 $_SESSION['loggedin'] = true;
                 header('location: index.php');
             } else {
