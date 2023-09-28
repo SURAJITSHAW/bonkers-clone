@@ -65,6 +65,45 @@ if (isset($_POST['login'])) {
                 $_SESSION['email'] = $row['email'];
                 $_SESSION['userid'] = $row['user_id'];
                 $_SESSION['loggedin'] = true;
+
+                // Let's add all the products from session variable to the database
+
+                if (isset($_SESSION['cart'])) {
+                    $product_id = array_column($_SESSION['cart'], 'p_id');
+                    if (!empty($product_id)) {
+                        $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(',', $product_id) . ')';
+                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+                    }
+
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $product_id = $row['p_id'];
+                            $quantity = 0; 
+
+                            foreach ($_SESSION['cart'] as $cartItem) {
+                                if ($cartItem['p_id'] == $product_id) {
+                                    $quantity = $cartItem['quantity'];
+                                    break;
+                                }
+                            }
+
+                            $sql_inert_cartDB = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$product_id}, {$quantity})";
+
+                            mysqli_query($conn, $sql_inert_cartDB) or die("Query Unsuccessful.");
+
+
+                          
+                        }
+                     
+                    }
+                } 
+
+                /////////////////////////////x///////////////////////////////////////
+
+
+
+
+
                 header('location: index.php');
             } else {
                 $showError = "Invalid credentials";
@@ -325,7 +364,7 @@ if (isset($_POST['login'])) {
     </div>';
     }
 
-    
+
     ?>
     <script>
         function closeAlert(element) {

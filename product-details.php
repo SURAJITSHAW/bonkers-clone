@@ -8,42 +8,39 @@ session_start();
 
 if (isset($_POST['add-cart'])) {
 
-if (isset($_SESSION['cart'])) {
+    if(isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
+        
+    }
 
-$item_arr_id = array_column($_SESSION['cart'], 'p_id');
+    if (isset($_SESSION['cart'])) {
 
-// print_r($item_arr_id);
+        $item_arr_id = array_column($_SESSION['cart'], 'p_id');
 
-if (in_array($_POST['p_id'], $item_arr_id)) {
-echo "<script>
-    alert('Product is already in the cart')
-</script>";
-echo "<script>
-    document.referrer
-</script>";
-// print_r($_SESSION['cart']);
-} else {
-$count = count($_SESSION['cart']);
-$item_arr = array(
-'p_id' => $_POST['p_id'],
-'quantity' => $_POST['quantity']
-);
-$_SESSION['cart'][$count] = $item_arr;
+        if (in_array($_POST['p_id'], $item_arr_id)) {
+            echo "<script>
+                alert('Product is already in the cart')
+            </script>";
+            echo "<script>
+                document.referrer
+            </script>";
+        } else {
+            $count = count($_SESSION['cart']);
+            $item_arr = array(
+            'p_id' => $_POST['p_id'],
+            'quantity' => $_POST['quantity']
+            );
+            $_SESSION['cart'][$count] = $item_arr;
+        }
+        }
+        // If session variable cart isn't set
+        else {
+            $item_arr = array(
+            'p_id' => $_POST['p_id'],
+            'quantity' => $_POST['quantity']
+        );
 
-// print_r($_SESSION['cart']);
-}
-}
-// If session variable cart isn't set
-else {
-$item_arr = array(
-'p_id' => $_POST['p_id'],
-'quantity' => $_POST['quantity']
-);
-
-$_SESSION['cart'][0] = $item_arr;
-
-// print_r($_SESSION['cart']);
-}
+        $_SESSION['cart'][0] = $item_arr;
+    }
 }
 
 ?>

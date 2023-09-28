@@ -74,12 +74,42 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Order Id</th>
-                                    <th>Order Date</th>
-                                    <th>Total Ammount</th>
+                                    <th style="border-bottom: 1px solid black;">Order Id</th>
+                                    <th style="border-bottom: 1px solid black;">Order Date</th>
+                                    <th style="border-bottom: 1px solid black;">Total Amount</th>
                                 </tr>
                             </thead>
+
                             <!-- Enter the table body here -->
+                            <?php
+                            $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                            $sql = "select * from orders";
+                            $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+
+
+                            if (mysqli_num_rows($result) > 0) {
+                                $id = 1;
+                                while ($row = mysqli_fetch_assoc($result)) {
+                            ?>
+
+                                    <tbody>
+                                        <tr>
+                                            <th><?php echo $id ?></th>
+                                            <th><?php
+                                                $dateTime = new DateTime($row['added_date']);
+                                                $formattedDate = $dateTime->format(" jS F Y");
+                                                echo $formattedDate; ?></th>
+                                            <th><?php
+                                                $formattedValue = number_format($row['amount'] / 100, 2);
+                                            echo $formattedValue; ?></th>
+                                        </tr>
+                                    </tbody>
+
+                            <?php
+                                    $id++;
+                                }
+                            }
+                            ?>
                         </table>
                     </div>
 

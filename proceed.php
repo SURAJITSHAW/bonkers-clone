@@ -270,7 +270,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         type: "POST",
                         data: {
                             user_id: userID,
-                            payment_id: paymentid
+                            payment_id: paymentid,
+                            total_paid: amount 
                         },
                         success: function(finalresponse) {
                             if (finalresponse == 'done') {
