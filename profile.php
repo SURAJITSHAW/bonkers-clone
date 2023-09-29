@@ -47,8 +47,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                 <h1 class="active">My Account</h1>
                 <h1>Orders</h1>
                 <h1>Coupons</h1>
-                <h1>Addresses</h1>
-                <h1>Account Details</h1>
+                <h1>Details</h1>
                 <h1>Wishlist</h1>
                 <h1>Logout</h1>
             </div>
@@ -58,17 +57,30 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         <li class="active">Dashboard</li>
                         <li>Orders</li>
                         <li>Coupons</li>
-                        <li>Address</li>
-                        <li>Account Details</li>
+                        <li>User Details</li>
                         <li>Wishlist</li>
                         <li>Logout</li>
                     </ul>
                 </div>
                 <div class="tab-content">
                     <div class="content active">
-                        <div>
-                            <p>Hello <strong><?php echo $_SESSION['email']; ?></strong>👋👋</p>
-                        </div>
+                        <?php
+                        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                        $sql = "select * from users where user_id=" . $_SESSION['userid'];
+                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+
+
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                        ?>
+                                <div>
+                                    <p>Hello <strong><?php echo $row['user_name']; ?></strong>👋👋</p>
+                                    <p>Email: <strong><?php echo $row['email']; ?></strong></p>
+                                    <p>Address: <strong><?php echo $row['address']; ?></strong></p>
+                                </div>
+                        <?php
+                            }
+                        } ?>
                     </div>
                     <div class="content">
                         <table>
@@ -101,7 +113,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                                                 echo $formattedDate; ?></th>
                                             <th><?php
                                                 $formattedValue = number_format($row['amount'] / 100, 2);
-                                            echo $formattedValue; ?></th>
+                                                echo $formattedValue; ?></th>
                                         </tr>
                                     </tbody>
 
@@ -118,60 +130,59 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                             <p>No Coupons Available</p>
                         </div>
                     </div>
+                    <?php
+                    if (isset($_POST['save_user_add']) && $_POST['save_user_add'] != null) {
+                        $house = $_POST['house'];
+                        $landmark = $_POST['landmark'];
+                        $city = $_POST['city'];
+                        $state  = $_POST['state'];
+                        $pin = $_POST['pin'];
+                        ////////////////////////////////////////////////////////////////
+                        $add = 'House/Flat no: ' . $house . ', Landmark: near ' . $landmark . ', City: ' . $city . ', State: ' . $state . ', Pin: ' . $pin;
+                        $name = $_POST['name'];
+                        $email = $_POST['email'];
+
+                        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                        $sql_up_user = "UPDATE users SET address='{$add}', user_name='{$name}', email='{$email}' WHERE user_id={$_SESSION['userid']}";
+                        $result = mysqli_query($conn, $sql_up_user) or die("query failed");
+                        if ($result) {
+                            echo '<script>window.location.href = "profile.php";</script>';
+                            exit; // Always exit after a header redirect to prevent further script execution
+                        }
+                    }
+
+                    ?>
+
                     <div class="content">
                         <div class="address">
-                            <h3>Address</h3>
-                            <form action="">
+                            <h3>Edit User Details</h3>
+                            <form method="POST" action="">
                                 <label for="">Name</label>
                                 <br />
-                                <input type="text" placeholder="Enter your Name" />
+                                <input required name="name" type="text" placeholder="Enter your Name" />
+                                <label for="">Email</label>
+                                <br />
+                                <input required name="email" type="email" placeholder="Enter your Email" />
                                 <br />
                                 <label for="">Street Address</label>
                                 <br />
-                                <input type="text" placeholder="House/Flat no." />
+                                <input required name="house" type="text" placeholder="House/Flat no." />
                                 <br />
-                                <input type="text" placeholder="Land Mark or Local area" />
+                                <input required name="landmark" type="text" placeholder="Land Mark or Local area" />
                                 <br />
                                 <label for="">City</label>
                                 <br />
-                                <input type="text" placeholder="Enter your City" />
+                                <input required name="city" type="text" placeholder="Enter your City" />
                                 <br />
                                 <label for="">State</label>
                                 <br />
-                                <input type="text" placeholder="Enter your State" />
+                                <input required name="state" type="text" placeholder="Enter your State" />
                                 <br />
                                 <label for="">Pin Code</label>
                                 <br />
-                                <input type="number" placeholder="Enter the Area Pin" />
+                                <input required name="pin" type="number" placeholder="Enter the Area Pin" />
                                 <br />
-                                <button type="submit" class="btn">
-                                    Save
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="content">
-                        <div class="account-details">
-                            <h3>Account Details</h3>
-                            <form action="">
-                                <label for="">Name</label>
-                                <br />
-                                <input type="text" placeholder="Enter your Name" />
-                                <br />
-                                <h4>Change Password</h4>
-                                <label for="">Old Password</label>
-                                <br />
-                                <input type="password" placeholder="Enter the Old Password" />
-                                <br />
-                                <label for="">New Password</label>
-                                <br />
-                                <input type="password" placeholder="Enter the New Password" />
-                                <br />
-                                <label for="">Re-enter new password</label>
-                                <br />
-                                <input type="password" placeholder="Re-enter the new Password" />
-                                <br />
-                                <button type="submit" class="btn">
+                                <button name="save_user_add" type="submit" class="btn" value="btn">
                                     Save
                                 </button>
                             </form>

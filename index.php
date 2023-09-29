@@ -74,7 +74,7 @@ session_start();
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="products.php?cat=12">
+                        <a href="products.php">
                             <img src="./assets/images/landing/webbanner_womens.jpg" alt="" />
                         </a>
                     </li>

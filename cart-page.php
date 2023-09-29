@@ -164,77 +164,52 @@ session_start();
                         </tr>
                     </thead>
                     <?php
+                    if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
 
-                    if (isset($_SESSION['cart'])) {
-                        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-                        $product_id = array_column($_SESSION['cart'], 'p_id');
-
-                        if (!empty($product_id)) {
-                            $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(",", $product_id) . ')';
-                            $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
-                        } else {
-                            // Handle the case when $product_id is empty
-                            echo '<h2>Cart is empty</h2>';
-                        }
+                        $sql_fetch = "select * from cart c join product p on c.p_id=p.p_id where user_id={$_SESSION['userid']}";
+                        $result = mysqli_query($conn, $sql_fetch) or die("Query Unsuccessful.");
 
                         if (mysqli_num_rows($result) > 0) {
                             $total = 0;
-                            echo '<tbody>';
+                            echo "<tbody>";
                             while ($row = mysqli_fetch_assoc($result)) {
-                                $product_id = $row['p_id'];
-                                $quantity = 0; // Default quantity
-                                $discountedPriceVarName = 'discountedPrice_' . $row['p_id']; // Create a unique variable name for each product
-                                $discountedPrice = $row['p_price'] - ($row['p_price'] * 15 / 100);
+                                $productName = $row['p_name'];
+                                $productPrice = (float)$row['p_price'];
+                                $quantity = (int)$row['quantity'];
+                                $discountedPrice = $productPrice - ($productPrice * (15 / 100));
+                                $temp_total = $quantity * $discountedPrice;
+                                $total += $temp_total;
 
-                                // Store the discounted price in a JavaScript variable with a unique name
-                                echo "<script>var {$discountedPriceVarName} = {$discountedPrice};</script>";
-
-                                // Check if the product ID exists in the session
-                                foreach ($_SESSION['cart'] as $cartItem) {
-                                    if ($cartItem['p_id'] == $product_id) {
-                                        $quantity = $cartItem['quantity'];
-                                        break; // Found the product in the session, no need to continue searching
-                                    }
-                                }
                     ?>
-
-                                <tr>
+                                <tr data-product-id="<?php echo $row['p_id']; ?>">
                                     <td>
                                         <div class="product-details">
                                             <img src="<?php echo '../../bonkerscorner.com/uploads/' . $row['p_img']; ?>" height="200px" />
                                             <div class="product-action">
                                                 <h2><?php echo $row['p_name']; ?></h2>
                                                 <br />
-                                                <a class="btn" onclick="removeCartItem(<?php echo $row['p_id']; ?>)">Remove</a>
+                                                <a class="btn bi-x" data-pID="<?php echo $row['p_id']; ?>">Remove</a>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <p class="actual-price">₹<span><?php echo $row['p_price'] ?></span></p>
+                                        <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>">₹<span><?php echo $productPrice ?></span></p>
                                     </td>
                                     <td>
                                         <p class="discounted-price">
-                                            <?php
-                                            $productPrice = $row['p_price'];
-                                            $discountPercentage = 15;
-
-                                            $discountAmount = $productPrice * ($discountPercentage / 100);
-                                            $discountedPrice = $productPrice - $discountAmount;
-
-                                            echo "₹<span>{$discountedPrice}</span>"
-                                            ?>
+                                            <?php echo "₹<span>{$discountedPrice}</span>" ?>
                                         </p>
                                     </td>
                                     <td>
                                         <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
                                             <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
-                                                <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantity(<?php echo $row['p_id']; ?>)">
+                                                <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantityLogIn(<?php echo $row['p_id']; ?>)">
                                                     -
                                                 </span>
 
-                                                <input readonly type="number" id="quantity_<?php echo $row['p_id']; ?>" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="<?php echo $quantity; ?>" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
+                                                <input readonly type="number" id="quantity_<?php echo $row['p_id']; ?>" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="<?php echo $row['quantity']; ?>" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
 
-                                                <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantity(<?php echo $row['p_id']; ?>)">
+                                                <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantityLogIn(<?php echo $row['p_id']; ?>)">
                                                     +
                                                 </span>
                                             </div>
@@ -242,29 +217,117 @@ session_start();
                                     </td>
                                     <td>
                                         <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
-                                            <?php
-                                            $temp_total = $quantity * $discountedPrice;
-                                            echo '₹' .
-                                                $quantity * $discountedPrice; ?>
+                                            <?php echo '₹' . $temp_total; ?>
                                         </p>
                                     </td>
                                 </tr>
 
-                    <?php
-                                $temp_total = $quantity * $discountedPrice;
-                                $total += $temp_total;
+                                <?php
+
                             }
                             echo '</tbody></table>
+                                <hr>
+                                <h3 style="padding-left: 93%; margin-top: 5px;"><span id="total" style="font-weight: boldest; color: red">₹' . $total . '</span></h3>';
+                        }
+                    } else {
+                        if (isset($_SESSION['cart'])) {
+                            $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                            $product_id = array_column($_SESSION['cart'], 'p_id');
 
-                <hr>
+                            if (!empty($product_id)) {
+                                $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(",", $product_id) . ')';
+                                $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+                            } else {
+                                // Handle the case when $product_id is empty
+                                echo '<h2>Cart is empty</h2>';
+                            }
 
-                <h3 style="padding-left: 93%; margin-top: 5px;"><span style="font-weight: boldest; color: red">₹' . $total .
-                                '</span></h3>';
+                            if (mysqli_num_rows($result) > 0) {
+                                $total = 0;
+                                echo '<tbody>';
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $product_id = $row['p_id'];
+                                    $quantity = 0; // Default quantity
+                                    $discountedPriceVarName = 'discountedPrice_' . $row['p_id']; // Create a unique variable name for each product
+                                    $discountedPrice = $row['p_price'] - ($row['p_price'] * 15 / 100);
+
+                                    // Store the discounted price in a JavaScript variable with a unique name
+                                    echo "<script>var {$discountedPriceVarName} = {$discountedPrice};</script>";
+
+                                    // Check if the product ID exists in the session
+                                    foreach ($_SESSION['cart'] as $cartItem) {
+                                        if ($cartItem['p_id'] == $product_id) {
+                                            $quantity = $cartItem['quantity'];
+                                            break; // Found the product in the session, no need to continue searching
+                                        }
+                                    }
+                                ?>
+                                    <tr data-product-id="<?php echo $row['p_id']; ?>">
+                                        <td>
+                                            <div class="product-details">
+                                                <img src="<?php echo '../../bonkerscorner.com/uploads/' . $row['p_img']; ?>" height="200px" />
+                                                <div class="product-action">
+                                                    <h2><?php echo $row['p_name']; ?></h2>
+                                                    <br />
+                                                    <a class="btn" onclick="removeCartItem(<?php echo $row['p_id']; ?>)">Remove</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="actual-price">₹<span><?php echo $row['p_price'] ?></span></p>
+                                        </td>
+                                        <td>
+                                            <p class="discounted-price">
+                                                <?php
+                                                $productPrice = $row['p_price'];
+                                                $discountPercentage = 15;
+
+                                                $discountAmount = $productPrice * ($discountPercentage / 100);
+                                                $discountedPrice = $productPrice - $discountAmount;
+
+                                                echo "₹<span>{$discountedPrice}</span>"
+                                                ?>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
+                                                <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
+                                                    <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantity(<?php echo $row['p_id']; ?>)">
+                                                        -
+                                                    </span>
+
+                                                    <input readonly type="number" id="quantity_<?php echo $row['p_id']; ?>" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="<?php echo $quantity; ?>" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
+
+                                                    <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantity(<?php echo $row['p_id']; ?>)">
+                                                        +
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
+                                                <?php
+                                                $temp_total = $quantity * $discountedPrice;
+                                                echo '₹' .
+                                                    $quantity * $discountedPrice; ?>
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                    <?php
+                                    $temp_total = $quantity * $discountedPrice;
+                                    $total += $temp_total;
+                                }
+                                echo '</tbody>
+                                </table>';
+                                // '<hr>
+                                // <h3 style="padding-left: 93%; margin-top: 5px;"><span style="font-weight: boldest; color: red">₹' . $total . '</span></h3>';
+                            } else {
+                                echo '<h2>Cart is empty</h2>';
+                            }
                         } else {
                             echo '<h2>Cart is empty</h2>';
                         }
-                    } else {
-                        echo '<h2>Cart is empty</h2>';
                     }
                     ?>
 
@@ -330,6 +393,121 @@ session_start();
 
     <script src="./scripts/index.js"></script>
     <script>
+        // Add a click event listener to all elements with the class 'bi-x'
+        document.querySelectorAll('.bi-x').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var p_id = this.getAttribute('data-pID');
+
+                // Send p_id to a PHP script using AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "processClick.php", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Handle the response from the PHP script if needed
+
+                        // Remove the item from the mini-cart display
+                        var cartItem = document.querySelector('tr[data-product-id="' + p_id + '"]');
+                        if (cartItem) {
+                            cartItem.remove();
+                            updateTotalLogIn();
+                        }
+
+                        console.log(xhr.responseText);
+                    }
+                };
+                xhr.send("p_id=" + p_id);
+            });
+        });
+
+        function updateTotalLogIn() {
+            // Send an AJAX request to get the updated total
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "getUpdatedTotal.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    var response = JSON.parse(xhr.responseText);
+                    var totalLogIn = response.total;
+                    var totalLogInF = totalLogIn.total;
+                    console.log(totalLogInF);
+
+                    // Update the total displayed on the page
+                    if (totalLogInF == null) {
+                        document.getElementById('total').textContent = '₹ 0.00';
+                    } else {
+                        document.getElementById('total').textContent = '₹' + totalLogInF;
+
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function updateItemTotal(productId, newQuantity) {
+            // Send an AJAX request to update the quantity in the cart table
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "updateQuantity.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            // Prepare the data to send to the server
+            var data = "p_id=" + productId + "&quantity=" + newQuantity;
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Handle the response from the PHP script if needed
+                    console.log(xhr.responseText);
+                    // Update the total and temp_total for the corresponding item
+                    updateTotalLogIn();
+                    updateItemTempTotal(productId, newQuantity);
+                }
+            };
+
+            // Send the request
+            xhr.send(data);
+        }
+
+        function incrementQuantityLogIn(productId) {
+            var quantityInput = document.getElementById('quantity_' + productId);
+            var currentValue = parseInt(quantityInput.value);
+            var maxValue = parseInt(quantityInput.getAttribute('max'));
+
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+                updateItemTotal(productId, currentValue + 1);
+            }
+        }
+
+        function decrementQuantityLogIn(productId) {
+            var quantityInput = document.getElementById('quantity_' + productId);
+            var currentValue = parseInt(quantityInput.value);
+            var minValue = parseInt(quantityInput.getAttribute('min'));
+
+            if (currentValue > minValue) {
+                quantityInput.value = currentValue - 1;
+                updateItemTotal(productId, currentValue - 1);
+            }
+        }
+
+        function updateItemTempTotal(productId, newQuantity) {
+            // Calculate the new temp_total for the item
+            var productPriceBefroe = document.getElementById('actual_price_' + productId).textContent;
+            var productPrice = parseFloat(productPriceBefroe.replace(/[^\d.]/g, ''));
+            console.log(productPrice);
+            var discountedPrice = productPrice - (productPrice * 0.15);
+            console.log(discountedPrice);
+            var tempTotal = newQuantity * discountedPrice;
+            console.log(tempTotal);
+
+            // Update the temp_total on the page
+            document.getElementById('temp_total_' + productId).textContent = '₹' + tempTotal.toFixed(2);
+        }
+
+
+
+
+        // While not logged in basically everything handles in session
+
         function removeCartItem(productId) {
             // Send an AJAX request to remove the item from the session
             var xhr = new XMLHttpRequest();
@@ -341,7 +519,7 @@ session_start();
                     // You can add any additional handling here if needed
 
                     // Remove the item from the mini-cart display
-                    var cartItem = document.querySelector('li[data-product-id="' + productId + '"]');
+                    var cartItem = document.querySelector('tr[data-product-id="' + productId + '"]');
                     if (cartItem) {
                         cartItem.remove();
                     }
@@ -351,7 +529,6 @@ session_start();
                 }
             };
             xhr.send('product_id=' + productId);
-            window.location.reload();
         }
 
         function updateSession(productId, quantity) {

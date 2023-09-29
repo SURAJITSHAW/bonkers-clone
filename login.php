@@ -63,6 +63,7 @@ if (isset($_POST['login'])) {
                 $login = true;
                 session_start();
                 $_SESSION['email'] = $row['email'];
+                $_SESSION['user_name'] = $row['user_name'];
                 $_SESSION['userid'] = $row['user_id'];
                 $_SESSION['loggedin'] = true;
 

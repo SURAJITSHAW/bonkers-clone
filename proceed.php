@@ -46,31 +46,52 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
         <main>
             <div class="proceed-container">
                 <div class="proceed-address">
+                    <?php
+                    if (isset($_POST['save_user_add_p']) && $_POST['save_user_add_p'] != null) {
+                        $house = $_POST['house'];
+                        $landmark = $_POST['landmark'];
+                        $city = $_POST['city'];
+                        $state  = $_POST['state'];
+                        $pin = $_POST['pin'];
+                        ////////////////////////////////////////////////////////////////
+                        $add = 'House/Flat no: ' . $house . ', Landmark: near ' . $landmark . ', City: ' . $city . ', State: ' . $state . ', Pin: ' . $pin;
+                    
+
+                        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                        $sql_up_user = "UPDATE users SET address='{$add}' WHERE user_id={$_SESSION['userid']}";
+                        $result = mysqli_query($conn, $sql_up_user) or die("query failed");
+                        if ($result) {
+                            echo '<script>window.location.href = "profile.php";</script>';
+                            exit; // Always exit after a header redirect to prevent further script execution
+                        }
+                    }
+
+                    ?>
                     <h3>Address</h3>
-                    <form action="">
-                        <label for="">Name</label>
-                        <br />
-                        <input type="text" placeholder="Enter your Name" />
+                    <form method="POST" action="">
+                        <input required name="email" type="email" placeholder="Enter your Email" />
                         <br />
                         <label for="">Street Address</label>
                         <br />
-                        <input type="text" placeholder="House/Flat no." />
+                        <input required name="house" type="text" placeholder="House/Flat no." />
                         <br />
-                        <input type="text" placeholder="Land Mark or Local area" />
+                        <input required name="landmark" type="text" placeholder="Land Mark or Local area" />
                         <br />
                         <label for="">City</label>
                         <br />
-                        <input type="text" placeholder="Enter your City" />
+                        <input required name="city" type="text" placeholder="Enter your City" />
                         <br />
                         <label for="">State</label>
                         <br />
-                        <input type="text" placeholder="Enter your State" />
+                        <input required name="state" type="text" placeholder="Enter your State" />
                         <br />
                         <label for="">Pin Code</label>
                         <br />
-                        <input type="number" placeholder="Enter the Area Pin" />
+                        <input required name="pin" type="number" placeholder="Enter the Area Pin" />
                         <br />
-                        <button type="submit" class="btn">Save</button>
+                        <button name="save_user_add_p" type="submit" class="btn" value="btn">
+                            Save
+                        </button>
                     </form>
                 </div>
                 <div class="proceed-payment">
@@ -83,64 +104,87 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         </thead>
                         <tbody>
                             <?php
-
-                            if (isset($_SESSION['cart'])) {
-                                $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-                                $product_id = array_column($_SESSION['cart'], 'p_id');
-
-                                if (!empty($product_id)) {
-                                    $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(",", $product_id) . ')';
-                                    $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
-                                } else {
-                                    // Handle the case when $product_id is empty
-                                    echo '<h2>Cart is empty</h2>';
-                                }
+                            if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
+                                $sql_fetch_cartDB = "select * from cart c join product p on c.p_id=p.p_id where user_id={$_SESSION['userid']}";
+                                $result = mysqli_query($conn, $sql_fetch_cartDB) or die("Query Unsuccessful.");
 
                                 if (mysqli_num_rows($result) > 0) {
                                     $total = 0;
                                     while ($row = mysqli_fetch_assoc($result)) {
                                         echo '<tr>';
-                                        $product_id = $row['p_id'];
-                                        $quantity = 0; // Default quantity
-                                        $discountedPriceVarName = 'discountedPrice_' . $row['p_id']; // Create a unique variable name for each product
-                                        $discountedPrice = $row['p_price'] - ($row['p_price'] * 15 / 100);
-
-                                        // Store the discounted price in a JavaScript variable with a unique name
-                                        echo "<script>var {$discountedPriceVarName} = {$discountedPrice};</script>";
-
-                                        // Check if the product ID exists in the session
-                                        foreach ($_SESSION['cart'] as $cartItem) {
-                                            if ($cartItem['p_id'] == $product_id) {
-                                                $quantity = $cartItem['quantity'];
-                                                break; // Found the product in the session, no need to continue searching
-                                            }
-                                        }
+                                        $productPrice = (float)$row['p_price'];
+                                        $quantity = (int)$row['quantity'];
+                                        $discountedPrice = $productPrice - ($productPrice * (15 / 100));
+                                        $temp_total = $quantity * $discountedPrice;
                             ?>
                                         <td><?php echo $row['p_name'] . " <small>x</small> " . $quantity; ?></td>
-
+                                        <td><?php echo $temp_total; ?></td>
 
                                         <?php
-                                        $productPrice = $row['p_price'];
-                                        $discountPercentage = 15;
+                                        $total += $temp_total;
+                                        echo '</tr>';
+                                    }
+                                }
+                            } else {
 
-                                        $discountAmount = $productPrice * ($discountPercentage / 100);
-                                        $discountedPrice = $productPrice - $discountAmount;
-                                        $price = $discountedPrice * $quantity;
+                                if (isset($_SESSION['cart'])) {
+                                    $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                                    $product_id = array_column($_SESSION['cart'], 'p_id');
 
-                                        echo "<td>{$price}</td>"
+                                    if (!empty($product_id)) {
+                                        $sql = 'SELECT * FROM product WHERE p_id IN (' . implode(",", $product_id) . ')';
+                                        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+                                    } else {
+                                        // Handle the case when $product_id is empty
+                                        echo '<h2>Cart is empty</h2>';
+                                    }
+
+                                    if (mysqli_num_rows($result) > 0) {
+                                        $total = 0;
+                                        while ($row = mysqli_fetch_assoc($result)) {
+                                            echo '<tr>';
+                                            $product_id = $row['p_id'];
+                                            $quantity = 0; // Default quantity
+                                            $discountedPriceVarName = 'discountedPrice_' . $row['p_id']; // Create a unique variable name for each product
+                                            $discountedPrice = $row['p_price'] - ($row['p_price'] * 15 / 100);
+
+                                            // Store the discounted price in a JavaScript variable with a unique name
+                                            echo "<script>var {$discountedPriceVarName} = {$discountedPrice};</script>";
+
+                                            // Check if the product ID exists in the session
+                                            foreach ($_SESSION['cart'] as $cartItem) {
+                                                if ($cartItem['p_id'] == $product_id) {
+                                                    $quantity = $cartItem['quantity'];
+                                                    break; // Found the product in the session, no need to continue searching
+                                                }
+                                            }
                                         ?>
+                                            <td><?php echo $row['p_name'] . " <small>x</small> " . $quantity; ?></td>
+
+
+                                            <?php
+                                            $productPrice = $row['p_price'];
+                                            $discountPercentage = 15;
+
+                                            $discountAmount = $productPrice * ($discountPercentage / 100);
+                                            $discountedPrice = $productPrice - $discountAmount;
+                                            $price = $discountedPrice * $quantity;
+
+                                            echo "<td>{$price}</td>"
+                                            ?>
 
 
                             <?php
-                                        $temp_total = $quantity * $discountedPrice;
-                                        $total += $temp_total;
-                                        echo "</tr>";
+                                            $temp_total = $quantity * $discountedPrice;
+                                            $total += $temp_total;
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo '<h2>Cart is empty</h2>';
                                     }
                                 } else {
                                     echo '<h2>Cart is empty</h2>';
                                 }
-                            } else {
-                                echo '<h2>Cart is empty</h2>';
                             }
                             ?>
 
@@ -184,10 +228,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                             </tr>
                         </tfoot>
                     </table>
-                    <button 
-                    data-amount="<?php $floatValue = (float) str_replace(',', '', $totalRounded); $paisaValue = (int) ($floatValue * 100); echo $paisaValue; ?>" 
-                    data-user="<?php echo $_SESSION['userid']; ?>" 
-                    class="btn buynow">
+                    <button data-amount="<?php $floatValue = (float) str_replace(',', '', $totalRounded);
+                                            $paisaValue = (int) ($floatValue * 100);
+                                            echo $paisaValue; ?>" data-user="<?php echo $_SESSION['userid']; ?>" class="btn buynow">
                         Pay
                     </button>
 
@@ -271,7 +314,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         data: {
                             user_id: userID,
                             payment_id: paymentid,
-                            total_paid: amount 
+                            total_paid: amount
                         },
                         success: function(finalresponse) {
                             if (finalresponse == 'done') {

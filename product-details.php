@@ -1,20 +1,20 @@
 <?php
 session_start();
-        // if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
-        //     header('location: login.php');
-        //     exit;
-        // }
-        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+// if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+//     header('location: login.php');
+//     exit;
+// }
+$conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
 
 if (isset($_POST['add-cart'])) {
 
-    if(isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
+    if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
         $p_id = $_POST['p_id'];
         $quantity = $_POST['quantity'];
         /* if youre logged in and want to add a product in the cart: */
 
         //    1. if the product is already in the cart -> just add the quantity
-        
+
         $sql_p_exist = "select * from cart where p_id={$p_id}";
         $result_exist = mysqli_query($conn, $sql_p_exist) or die("Query Unsuccessful.");
 
@@ -27,15 +27,9 @@ if (isset($_POST['add-cart'])) {
         }
         //    2. or the product isn't in the cart -> insert it
         else {
-                $sql1 = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$p_id}, {$quantity});";
-                $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-  
-
+            $sql1 = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$p_id}, {$quantity});";
+            $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
         }
-
-
-
-
     } else {
         if (isset($_SESSION['cart'])) {
 
@@ -67,7 +61,6 @@ if (isset($_POST['add-cart'])) {
             $_SESSION['cart'][0] = $item_arr;
         }
     }
-
 }
 
 ?>
@@ -96,6 +89,25 @@ if (isset($_POST['add-cart'])) {
         ?>
 
         <!-- Main Section -->
+        <script>
+            let openCart = document.querySelector(".cart-button");
+            let container = document.querySelector(".container");
+            let closeCart = document.querySelector(".close-cart");
+
+            openCart.addEventListener("click", () => {
+                container.classList.add("active-cart");
+            })
+
+            closeCart.addEventListener("click", () => {
+                container.classList.remove("active-cart")
+            })
+
+
+            // Automatically trigger the click event when the page loads
+            document.addEventListener("DOMContentLoaded", () => {
+                openCart.click();
+            });
+        </script>
 
         <?php
         if (isset($_GET['id'])) {

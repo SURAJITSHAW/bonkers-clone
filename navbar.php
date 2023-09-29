@@ -163,6 +163,8 @@
                 $discountedPrice = $productPrice - ($productPrice * (15 / 100));
                 $temp_total = $quantity * $discountedPrice;
         ?>
+            
+
 
                 <li data-product-id="<?php echo $row['p_id']; ?>" style=" margin: 5px; padding: 10px; border-bottom: #333;">
                     <div class="carted-item">
@@ -194,14 +196,14 @@
 
 
                             <div class="showcase-pricing">
-                                <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>">₹<span><?php echo $productPrice ?></span></p>
+                                <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>"><?php echo $productPrice ?></p>
 
                                 <p class="discounted-price">
                                     <?php echo "₹<span>{$discountedPrice}</span>";  ?>
                                 </p>
 
                                 <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
-                                    ₹<span><?php echo $temp_total; ?></span>
+                                    <?php echo $temp_total; ?>
                                 </p>
                             </div>
 
@@ -218,6 +220,7 @@
             echo '<h2>Cart is empty</h2>';
         }
         ?>
+        
 
         <div class="checkout">
             <div id="total" style="font-weight: bolder"><?php
@@ -549,5 +552,10 @@
 
 
     // Call updateTotal initially to calculate the total
-    updateTotal();
+    <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) : ?>
+        updateTotalLogIn();
+    <?php else: ?>
+        updateTotal();
+    <?php endif; ?>
+
 </script>
