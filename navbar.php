@@ -163,6 +163,7 @@
                 $discountedPrice = $productPrice - ($productPrice * (15 / 100));
                 $temp_total = $quantity * $discountedPrice;
         ?>
+                <p><?php echo $temp_total; ?></p>
 
                 <li data-product-id="<?php echo $row['p_id']; ?>" style=" margin: 5px; padding: 10px; border-bottom: #333;">
                     <div class="carted-item">
@@ -176,6 +177,8 @@
                                 <i style="cursor: pointer;" class="bi bi-x" data-pID="<?php echo $row['p_id']; ?>"></i>
 
                             </div>
+
+
                             <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
                                 <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
                                     <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantity(<?php echo $row['p_id']; ?>)">
@@ -189,6 +192,8 @@
                                     </span>
                                 </div>
                             </div>
+
+
                             <div class="showcase-pricing">
                                 <p class="actual-price">₹<span><?php echo $productPrice ?></span></p>
                                 <p class="discounted-price">
@@ -196,9 +201,11 @@
                                 </p>
 
                                 <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
-                                    <?php echo "₹<span>{$temp_total}</span>";  ?>
+                                    ₹<span><?php echo $temp_total; ?></span>
                                 </p>
                             </div>
+
+                            
                         </div>
                     </div>
                 </li>
@@ -385,7 +392,7 @@
                 if (totalLogInF == null) {
                     document.getElementById('total').innerHTML = '₹ 0.00';
                 } else {
-                document.getElementById('total').innerHTML = '₹' + totalLogInF;
+                    document.getElementById('total').innerHTML = '₹' + totalLogInF;
 
                 }
             }
