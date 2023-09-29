@@ -163,7 +163,6 @@
                 $discountedPrice = $productPrice - ($productPrice * (15 / 100));
                 $temp_total = $quantity * $discountedPrice;
         ?>
-                <p><?php echo $temp_total; ?></p>
 
                 <li data-product-id="<?php echo $row['p_id']; ?>" style=" margin: 5px; padding: 10px; border-bottom: #333;">
                     <div class="carted-item">
@@ -195,7 +194,8 @@
 
 
                             <div class="showcase-pricing">
-                                <p class="actual-price">₹<span><?php echo $productPrice ?></span></p>
+                                <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>">₹<span><?php echo $productPrice ?></span></p>
+
                                 <p class="discounted-price">
                                     <?php echo "₹<span>{$discountedPrice}</span>";  ?>
                                 </p>
@@ -400,34 +400,27 @@
         xhr.send();
     }
 
-    function decrementQuantityLogIn(productId) {
-        var quantityInput = document.getElementById('quantity_' + productId);
-        var currentValue = parseInt(quantityInput.value);
-        var minValue = parseInt(quantityInput.getAttribute('min'));
+    function updateItemTotal(productId, newQuantity) {
+        // Send an AJAX request to update the quantity in the cart table
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "updateQuantity.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        if (currentValue > minValue) {
-            quantityInput.value = currentValue - 1;
+        // Prepare the data to send to the server
+        var data = "p_id=" + productId + "&quantity=" + newQuantity;
 
-            // Send an AJAX request to update the quantity in the cart table
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "updateQuantity.php", true);
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Handle the response from the PHP script if needed
+                console.log(xhr.responseText);
+                // Update the total and temp_total for the corresponding item
+                updateTotalLogIn();
+                updateItemTempTotal(productId, newQuantity);
+            }
+        };
 
-            // Prepare the data to send to the server
-            var data = "p_id=" + productId + "&quantity=" + (currentValue - 1);
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    // Handle the response from the PHP script if needed
-                    console.log(xhr.responseText);
-                    // You can also update the total or perform other actions here
-                    updateTotalLogIn();
-                }
-            };
-
-            // Send the request
-            xhr.send(data);
-        }
+        // Send the request
+        xhr.send(data);
     }
 
     function incrementQuantityLogIn(productId) {
@@ -437,28 +430,35 @@
 
         if (currentValue < maxValue) {
             quantityInput.value = currentValue + 1;
-
-            // Send an AJAX request to update the quantity in the cart table
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "updateQuantity.php", true);
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-            // Prepare the data to send to the server
-            var data = "p_id=" + productId + "&quantity=" + (currentValue + 1);
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    // Handle the response from the PHP script if needed
-                    console.log(xhr.responseText);
-                    // You can also update the total or perform other actions here
-                    updateTotalLogIn();
-                }
-            };
-
-            // Send the request
-            xhr.send(data);
+            updateItemTotal(productId, currentValue + 1);
         }
     }
+
+    function decrementQuantityLogIn(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var minValue = parseInt(quantityInput.getAttribute('min'));
+
+        if (currentValue > minValue) {
+            quantityInput.value = currentValue - 1;
+            updateItemTotal(productId, currentValue - 1);
+        }
+    }
+
+    function updateItemTempTotal(productId, newQuantity) {
+        // Calculate the new temp_total for the item
+        var productPriceBefroe = document.getElementById('actual_price_' + productId).textContent;
+        var productPrice = parseFloat(productPriceBefroe.replace(/[^\d.]/g, ''));
+        console.log(productPrice);
+        var discountedPrice = productPrice - (productPrice * 0.15);
+        console.log(discountedPrice);
+        var tempTotal = newQuantity * discountedPrice;
+        console.log(tempTotal);
+
+        // Update the temp_total on the page
+        document.getElementById('temp_total_' + productId).textContent = '₹' + tempTotal.toFixed(2);
+    }
+
 
 
 
