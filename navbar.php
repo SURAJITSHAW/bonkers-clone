@@ -181,13 +181,13 @@
 
                             <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
                                 <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
-                                    <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantity(<?php echo $row['p_id']; ?>)">
+                                    <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantityLogIn(<?php echo $row['p_id']; ?>)">
                                         -
                                     </span>
 
                                     <input readonly type="number" id="quantity_<?php echo $row['p_id']; ?>" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="<?php echo $row['quantity']; ?>" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
 
-                                    <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantity(<?php echo $row['p_id']; ?>)">
+                                    <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantityLogIn(<?php echo $row['p_id']; ?>)">
                                         +
                                     </span>
                                 </div>
@@ -205,7 +205,7 @@
                                 </p>
                             </div>
 
-                            
+
                         </div>
                     </div>
                 </li>
@@ -400,15 +400,69 @@
         xhr.send();
     }
 
+    function decrementQuantityLogIn(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var minValue = parseInt(quantityInput.getAttribute('min'));
+
+        if (currentValue > minValue) {
+            quantityInput.value = currentValue - 1;
+
+            // Send an AJAX request to update the quantity in the cart table
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "updateQuantity.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            // Prepare the data to send to the server
+            var data = "p_id=" + productId + "&quantity=" + (currentValue - 1);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Handle the response from the PHP script if needed
+                    console.log(xhr.responseText);
+                    // You can also update the total or perform other actions here
+                    updateTotalLogIn();
+                }
+            };
+
+            // Send the request
+            xhr.send(data);
+        }
+    }
+
+    function incrementQuantityLogIn(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var maxValue = parseInt(quantityInput.getAttribute('max'));
+
+        if (currentValue < maxValue) {
+            quantityInput.value = currentValue + 1;
+
+            // Send an AJAX request to update the quantity in the cart table
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "updateQuantity.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            // Prepare the data to send to the server
+            var data = "p_id=" + productId + "&quantity=" + (currentValue + 1);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Handle the response from the PHP script if needed
+                    console.log(xhr.responseText);
+                    // You can also update the total or perform other actions here
+                    updateTotalLogIn();
+                }
+            };
+
+            // Send the request
+            xhr.send(data);
+        }
+    }
 
 
 
-
-
-
-
-
-
+    // While not logged in basically everything handles in session
 
     function removeCartItem(productId) {
         // Send an AJAX request to remove the item from the session
