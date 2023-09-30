@@ -196,14 +196,14 @@
 
 
                             <div class="showcase-pricing">
-                                <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>"><?php echo $productPrice ?></p>
+                                <p class="actual-price" id="actual_price_<?php echo $row['p_id']; ?>"><?php echo '₹' . $productPrice ?></p>
 
                                 <p class="discounted-price">
                                     <?php echo "₹<span>{$discountedPrice}</span>";  ?>
                                 </p>
 
                                 <p style="color: red; font-weight: bolder" id="temp_total_<?php echo $row['p_id']; ?>">
-                                    <?php echo $temp_total; ?>
+                                    <?php echo '₹' . $temp_total; ?>
                                 </p>
                             </div>
 

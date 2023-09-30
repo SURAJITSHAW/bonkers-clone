@@ -170,99 +170,42 @@ session_start();
             <div class="new-arrival">
                 <div class="section-title">Best Sellers</div>
                 <div class="product-showcase">
-                    <!-- Product Card component -->
-                    <a href="product-details.php">
-                        <div class="product-card">
-                            <img src="./assets/images/product/Bonkerscorner_black_wide_leg_sweatpants_8660-1-768x1152.jpg" alt="" />
-                            <div class="product-data">
-                                <p class="category-details">Bottoms</p>
-                                <p class="product-name">Blck Pant</p>
-                                <div class="product-price">
-                                    <p class="original-price">
-                                        ₹<span>1499</span>
-                                    </p>
-                                    <p class="discounted-price">
-                                        ₹<span>799</span>
-                                    </p>
+                    <?php
+                    $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+                    $sql = "SELECT * FROM product LIMIT 4";
+                    $result = mysqli_query($conn, $sql) or die("Query Execution Failed");
+
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_array($result)) {
+                    ?>
+                            <!-- Product Card component -->
+                            <a href="product-details.php?id=<?php echo $row['p_id']; ?>">
+                                <div class="product-card">
+                                    <img src=<?php echo "../bonkerscorner.com/uploads/" . $row['p_img']; ?> alt="" />
+                                    <div class="product-data">
+                                        <p class="category-details">Best Seller</p>
+                                        <p class="product-name"><?php echo $row['p_name'] ?></p>
+                                        <div class="product-price">
+                                            <p class="original-price">
+                                                ₹<span><?php echo $row['p_price'] ?></span>
+                                            </p>
+                                            <p class="discounted-price">
+                                                ₹<span><?php echo $row['p_price'] * .85; ?></span>
+                                            </p>
+                                        </div>
+                                        <div class="product-action">
+                                            <button class="btn-add-to-cart">
+                                                View Product</button><button class="btn-heart">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="product-action">
-                                    <button class="btn-add-to-cart">
-                                        View Product</button><button class="btn-heart">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="product-details.php">
-                        <div class="product-card">
-                            <img src="./assets/images/product/Bonkerscorner_blue-top_05-768x1152.jpg" alt="" />
-                            <div class="product-data">
-                                <p class="category-details">Bottoms</p>
-                                <p class="product-name">Blck Pant</p>
-                                <div class="product-price">
-                                    <p class="original-price">
-                                        ₹<span>1499</span>
-                                    </p>
-                                    <p class="discounted-price">
-                                        ₹<span>799</span>
-                                    </p>
-                                </div>
-                                <div class="product-action">
-                                    <button class="btn-add-to-cart">
-                                        View Product</button><button class="btn-heart">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="product-details.php">
-                        <div class="product-card">
-                            <img src="./assets/images/product/20230725_060209000_iOS-4-768x1152.jpg" alt="" />
-                            <div class="product-data">
-                                <p class="category-details">Bottoms</p>
-                                <p class="product-name">Blck Pant</p>
-                                <div class="product-price">
-                                    <p class="original-price">
-                                        ₹<span>1499</span>
-                                    </p>
-                                    <p class="discounted-price">
-                                        ₹<span>799</span>
-                                    </p>
-                                </div>
-                                <div class="product-action">
-                                    <button class="btn-add-to-cart">
-                                        View Product</button><button class="btn-heart">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="product-details.php">
-                        <div class="product-card">
-                            <img src="./assets/images/product/Bonkerscorner_green-derss_03-1-768x1152.jpg" alt="" />
-                            <div class="product-data">
-                                <p class="category-details">Bottoms</p>
-                                <p class="product-name">Blck Pant</p>
-                                <div class="product-price">
-                                    <p class="original-price">
-                                        ₹<span>1499</span>
-                                    </p>
-                                    <p class="discounted-price">
-                                        ₹<span>799</span>
-                                    </p>
-                                </div>
-                                <div class="product-action">
-                                    <button class="btn-add-to-cart">
-                                        View Product</button><button class="btn-heart">
-                                        <i class="bi bi-heart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                            </a>
+                    <?php
+                        }
+                    }
+                    ?>
                 </div>
             </div>
 

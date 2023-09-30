@@ -88,9 +88,25 @@ if (isset($_POST['login'])) {
                                 }
                             }
 
-                            $sql_inert_cartDB = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$product_id}, {$quantity})";
+                            //    1. if the product is already in the cart -> just add the quantity
 
-                            mysqli_query($conn, $sql_inert_cartDB) or die("Query Unsuccessful.");
+                            $sql_p_exist = "select * from cart where p_id={$product_id}";
+                            $result_exist = mysqli_query($conn, $sql_p_exist) or die("Query Unsuccessful.");
+
+                            if (mysqli_num_rows($result_exist) > 0) {
+                                while ($row_exist = mysqli_fetch_assoc($result_exist)
+                                ) {
+                                    $newQuantity = $row_exist['quantity'] +  $quantity;
+                                    $sql1 = "UPDATE `cart` SET `quantity` = {$newQuantity} WHERE `cart`.`p_id` ={$product_id}";
+                                    $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
+                                }
+                            }
+                            //    2. or the product isn't in the cart -> insert it
+                            else {
+                                $sql_inert_cartDB = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$product_id}, {$quantity})";
+                                mysqli_query($conn, $sql_inert_cartDB) or die("Query Unsuccessful.");
+                            }
+                            
 
 
                           

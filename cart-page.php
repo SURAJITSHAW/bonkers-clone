@@ -593,7 +593,11 @@ session_start();
 
 
         // Call updateTotal initially to calculate the total
-        updateTotal();
+        <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) : ?>
+            updateTotalLogIn();
+        <?php else : ?>
+            updateTotal();
+        <?php endif; ?>
     </script>
 </body>
 

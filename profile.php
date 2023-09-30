@@ -74,9 +74,43 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                             while ($row = mysqli_fetch_assoc($result)) {
                         ?>
                                 <div>
-                                    <p>Hello <strong><?php echo $row['user_name']; ?></strong>👋👋</p>
-                                    <p>Email: <strong><?php echo $row['email']; ?></strong></p>
-                                    <p>Address: <strong><?php echo $row['address']; ?></strong></p>
+                                    <p style="margin: 20px;">Hello <strong><?php echo $row['user_name']; ?></strong>👋👋</p>
+                                    <p style="margin: 20px;">Email: <strong><?php echo $row['email']; ?></strong></p>
+                                    <p style="margin: 20px;">Address: <strong><?php echo $row['address']; ?></strong></p>
+                                    <?php
+                                    // SQL query to get total amount and total orders
+                                    $sql = "SELECT COUNT(*) AS total_orders, SUM(amount) AS total_amount FROM orders WHERE user_id=" . $_SESSION['userid'];
+                                    $result = mysqli_query($conn, $sql);
+
+                                    if ($result) {
+                                        // Fetch the results
+                                        $row = mysqli_fetch_assoc($result);
+
+                                        // Store the values in PHP variables
+                                        $totalOrders = $row['total_orders'];
+                                        $totalAmount = $row['total_amount'];
+
+                                        // Close the database connection
+                                        mysqli_close($conn);
+                                    } else {
+                                        echo "Query failed: " . mysqli_error($conn);
+                                    }
+                                    ?>
+                                    <div style="display: flex; flex-direction: row;">
+                                        <div style="width: 300px; padding: 20px; background-color: #FFE4B5; border: 1px solid #ccc; margin: 20px;">
+                                            <h2 style="color: #FF6600;">📦<?php echo $totalOrders; ?></h2>
+                                            <p style="font-size: 18px; color: #666;">Orders has been placeed by you.</p>
+                                        </div>
+
+                                        <div style="width: 300px; padding: 20px; background-color: #007BFF; color: #fff; margin: 20px;">
+                                            <h2>₹<?php
+                                                    $formattedValue = number_format($totalAmount / 100, 2);
+                                                    echo $formattedValue; ?></h2>
+                                            <p>You had spent in the past.</p>
+                                        </div>
+                                    </div>
+
+                                    <a href="logout.php" style="width: 10%; margin: 20px; background-color: #dc3545; color: #fff; border-color: #dc3545; padding: 10px; border-radius: 5px;">Log Out</a>
                                 </div>
                         <?php
                             }
