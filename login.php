@@ -207,7 +207,6 @@ if (isset($_POST['login'])) {
 
         body {
             font-family: Arial, sans-serif;
-            background-image: url('./assets//bg.jpg');
             /* Replace with your image path */
             background-size: cover;
             background-repeat: no-repeat;

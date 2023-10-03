@@ -4,64 +4,64 @@ session_start();
 //     header('location: login.php');
 //     exit;
 // }
-$conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+// $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
 
-if (isset($_POST['add-cart'])) {
+// if (isset($_POST['add-cart'])) {
 
-    if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
-        $p_id = $_POST['p_id'];
-        $quantity = $_POST['quantity'];
-        /* if youre logged in and want to add a product in the cart: */
+//     if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
+//         $p_id = $_POST['p_id'];
+//         $quantity = $_POST['quantity'];
+//         /* if youre logged in and want to add a product in the cart: */
 
-        //    1. if the product is already in the cart -> just add the quantity
+//         //    1. if the product is already in the cart -> just add the quantity
 
-        $sql_p_exist = "select * from cart where p_id={$p_id}";
-        $result_exist = mysqli_query($conn, $sql_p_exist) or die("Query Unsuccessful.");
+//         $sql_p_exist = "select * from cart where p_id={$p_id}";
+//         $result_exist = mysqli_query($conn, $sql_p_exist) or die("Query Unsuccessful.");
 
-        if (mysqli_num_rows($result_exist) > 0) {
-            while ($row_exist = mysqli_fetch_assoc($result_exist)) {
-                $newQuantity = $row_exist['quantity'] +  $quantity;
-                $sql1 = "UPDATE `cart` SET `quantity` = {$newQuantity} WHERE `cart`.`p_id` ={$p_id}";
-                $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-            }
-        }
-        //    2. or the product isn't in the cart -> insert it
-        else {
-            $sql1 = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$p_id}, {$quantity});";
-            $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-        }
-    } else {
-        if (isset($_SESSION['cart'])) {
+//         if (mysqli_num_rows($result_exist) > 0) {
+//             while ($row_exist = mysqli_fetch_assoc($result_exist)) {
+//                 $newQuantity = $row_exist['quantity'] +  $quantity;
+//                 $sql1 = "UPDATE `cart` SET `quantity` = {$newQuantity} WHERE `cart`.`p_id` ={$p_id}";
+//                 $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
+//             }
+//         }
+//         //    2. or the product isn't in the cart -> insert it
+//         else {
+//             $sql1 = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$p_id}, {$quantity});";
+//             $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
+//         }
+//     } else {
+//         if (isset($_SESSION['cart'])) {
 
-            $item_arr_id = array_column($_SESSION['cart'], 'p_id');
+//             $item_arr_id = array_column($_SESSION['cart'], 'p_id');
 
-            if (in_array($_POST['p_id'], $item_arr_id)) {
-                echo "<script>
-                alert('Product is already in the cart')
-            </script>";
-                echo "<script>
-                document.referrer
-            </script>";
-            } else {
-                $count = count($_SESSION['cart']);
-                $item_arr = array(
-                    'p_id' => $_POST['p_id'],
-                    'quantity' => $_POST['quantity']
-                );
-                $_SESSION['cart'][$count] = $item_arr;
-            }
-        }
-        // If session variable cart isn't set
-        else {
-            $item_arr = array(
-                'p_id' => $_POST['p_id'],
-                'quantity' => $_POST['quantity']
-            );
+//             if (in_array($_POST['p_id'], $item_arr_id)) {
+//                 echo "<script>
+//                 alert('Product is already in the cart')
+//             </script>";
+//                 echo "<script>
+//                 document.referrer
+//             </script>";
+//             } else {
+//                 $count = count($_SESSION['cart']);
+//                 $item_arr = array(
+//                     'p_id' => $_POST['p_id'],
+//                     'quantity' => $_POST['quantity']
+//                 );
+//                 $_SESSION['cart'][$count] = $item_arr;
+//             }
+//         }
+//         // If session variable cart isn't set
+//         else {
+//             $item_arr = array(
+//                 'p_id' => $_POST['p_id'],
+//                 'quantity' => $_POST['quantity']
+//             );
 
-            $_SESSION['cart'][0] = $item_arr;
-        }
-    }
-}
+//             $_SESSION['cart'][0] = $item_arr;
+//         }
+//     }
+// }
 
 ?>
 
@@ -225,7 +225,7 @@ if (isset($_POST['add-cart'])) {
                             </div> -->
 
 
-                            <form action="" method="post">
+                            <form id="add-to-cart-form" data-product-id="<?php echo $row['p_id']; ?>">
                                 <div class="quantity" style="display: flex; align-items: center; margin: 10px;">
                                     <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
                                         <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantityPD()">
@@ -246,9 +246,11 @@ if (isset($_POST['add-cart'])) {
 
                                 <input type="hidden" name="p_id" value="<?php echo $row['p_id']; ?>">
 
-                                <button class="btn">
-                                    <i class="bi bi-heart"></i> Wishlist
-                                </button>
+                                <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) { ?>
+                                    <button class="btn">
+                                        <i class="bi bi-heart"></i> Wishlist
+                                    </button>
+                                <?php } ?>
                             </form>
 
 
@@ -435,6 +437,47 @@ if (isset($_POST['add-cart'])) {
     </div>
 </footer>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addToCartForm = document.getElementById("add-to-cart-form");
+
+        addToCartForm.addEventListener("submit", function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            const productId = addToCartForm.querySelector("input[name='p_id']").value;
+            const quantity = addToCartForm.querySelector("input[name='quantity']").value;
+
+            console.log(productId, quantity);
+
+            // Send an AJAX request to the PHP script to add the product to the cart
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "add_to_cart.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle the response from the server (e.g., show a success message)
+                        console.log(xhr);
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            alert("Product added to cart successfully!");
+                        } else {
+                            alert("Failed to add product to cart.");
+                        }
+                    } else {
+                        alert("Failed to connect to the server.");
+                    }
+                }
+            };
+
+            const data = `add-cart=1&p_id=${productId}&quantity=${quantity}`;
+            xhr.send(data);
+        });
+    });
+</script>
+
 
 <script src="./scripts/index.js"></script>
 

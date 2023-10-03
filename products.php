@@ -193,7 +193,9 @@ session_start();
                                             <div class="product-action">
                                                 <button class="btn-add-to-cart">
                                                     View Product</button><button class="btn-heart">
-                                                    <i class="bi bi-heart"></i>
+                                                    <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) { ?>
+                                                        <i class="bi bi-heart"></i>
+                                                    <?php } ?>
                                                 </button>
                                             </div>
                                         </div>
