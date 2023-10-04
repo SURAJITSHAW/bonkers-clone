@@ -391,9 +391,21 @@ session_start();
 
                 // Get the <ul> element where you want to replace the content
                 const cartList = document.querySelector('.list-cart');
+                console.log(cartList);
 
                 // Remove existing <li> elements
-                cartList.innerHTML = '';
+                if (cartList !== null) {
+                    cartList.innerHTML = '';
+                } else {
+                    var h2Element = document.querySelector("body > div > div > h2");
+                    h2Element.style.display = "none";
+
+                    const miniCart = document.querySelector('.mini-cart');
+                    element = document.createElement("div");
+                    element.className = "list-cart";
+                    element.innerHTML = "";
+                    miniCart.appendChild(element);
+                }
 
                 // Generate and append new <li> elements based on cartData
                 cartData.forEach(item => {
@@ -442,7 +454,8 @@ session_start();
                         `;
 
                     // Append the new <li> element to the <ul>
-                    cartList.appendChild(li);
+                    document.querySelector('.list-cart').appendChild(li);
+
                 });
             }
         };
