@@ -416,7 +416,7 @@ session_start();
                                     <div class="carted-item-title">
                                         <p>${item.p_name}</p>
                                         <!-- Add an "X" button with a click event -->
-                                        <i style="cursor: pointer;" class="bi bi-x" data-pID="${item.p_id}"></i>
+                                        <i style="cursor: pointer;" class="bi bi-x" data-pID="${item.p_id}" onclick="handleIconClick(this)"></i>
                                     </div>
                                     <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
                                         <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
@@ -495,10 +495,39 @@ session_start();
 </script>
 
 <script>
+    function handleIconClick(iconElement) {
+        // Access the data-pID attribute value
+        var p_id = iconElement.getAttribute("data-pID");
+
+        // Perform any actions you need with pID
+        console.log("Icon clicked with pID: " + p_id);
+
+        // Send p_id to a PHP script using AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "processClick.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Handle the response from the PHP script if needed
+
+                // Remove the item from the mini-cart display
+                var cartItem = document.querySelector('li[data-product-id="' + p_id + '"]');
+                if (cartItem) {
+                    cartItem.remove();
+                    updateTotalLogIn();
+                }
+
+                console.log(xhr.responseText);
+            }
+        };
+        xhr.send("p_id=" + p_id);
+    }
+
     // Add a click event listener to all elements with the class 'bi-x'
     document.querySelectorAll('.bi-x').forEach(function(element) {
         element.addEventListener('click', function() {
             var p_id = this.getAttribute('data-pID');
+            console.log(p_id);
 
             // Send p_id to a PHP script using AJAX
             var xhr = new XMLHttpRequest();
