@@ -184,14 +184,72 @@ session_start();
                                 <input type="hidden" name="p_id" value="<?php echo $row['p_id']; ?>">
 
                                 <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) { ?>
-                                    <button class="btn">
+                                    <button class="btn" id="wishlist-button">
                                         <i class="bi bi-heart"></i> Wishlist
                                     </button>
                                 <?php } ?>
                             </form>
 
+                            <div id="wishlist-alert" style="display: none; position: fixed; bottom: 400px; right: 570px; z-index: 1000; background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
+                                <span style="font-weight: bold;" id="wishlist-alert-text"></span>
+                                <button type="button" onclick="closeWishlistAlert()" style="background: none; border: none; color: white; float: right; font-size: 20px; cursor: pointer;">&times;</button>
+                            </div>
+
+
+
 
                             <script>
+                                // JavaScript to show the wishlist alert
+                                function showWishlistAlert(message) {
+                                    var wishlistAlert = document.getElementById('wishlist-alert');
+                                    var wishlistAlertText = document.getElementById('wishlist-alert-text');
+
+                                    if (wishlistAlert && wishlistAlertText) {
+                                        wishlistAlertText.innerText = message; // Set the dynamic message text
+                                        wishlistAlert.style.display = 'block';
+                                        setTimeout(function() {
+                                            wishlistAlert.style.display = 'none';
+                                        }, 5000); // Hide the alert after 5 seconds (adjust as needed)
+                                    }
+                                }
+
+                                function closeWishlistAlert() {
+                                    var alert = document.getElementById('wishlist-alert');
+                                    alert.style.display = 'none';
+                                }
+
+                                // Add an event listener to the "Wishlist" button
+                                var wishlistButton = document.getElementById("wishlist-button");
+                                wishlistButton.addEventListener("click", function(event) {
+                                    event.preventDefault(); // Prevent the default form submission behavior
+
+                                    // Get the product ID from the form
+                                    var productId = document.querySelector('#add-to-cart-form [name="p_id"]').value;
+
+                                    // Send an AJAX request to store the product in the wishlist
+                                    var xhr = new XMLHttpRequest();
+                                    xhr.open("POST", "add-to-wishlist.php", true);
+                                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                                    // Define the data to send
+                                    var data = "p_id=" + productId;
+
+                                    xhr.onreadystatechange = function() {
+                                        if (xhr.readyState === 4) {
+                                            if (xhr.status === 200) {
+                                                // Request was successful, show the success message
+                                                showWishlistAlert(xhr.responseText);
+                                            } else {
+                                                // Request failed, show an error message
+                                                showWishlistAlert("Failed to add product to wishlist.");
+                                            }
+                                        }
+                                    };
+
+                                    xhr.send(data);
+                                });
+
+
                                 function incrementQuantityPD() {
                                     var quantityInput = document.getElementById('quantity_650d2bef84a81');
                                     var currentValue = parseInt(quantityInput.value);

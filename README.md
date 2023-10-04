@@ -8,7 +8,7 @@ This is clone project, where trying to replicate https://www.bonkerscorner.com/
 - if the cart is empty view cart (cart details page) design got distorted, same with proceed page
 <!-- Later -->
 - proceed.php: at the side show the no of addresses user have stored, add a radio button option to which one to choose. And also give option to create a new address
-- About address DB table: create a separate table for the address which will in a way ralted to users somehow.
+- About address DB table: create a separate table for the address which will in a way related to users somehow.
 - Had to modify 'orders' table: there's 2 way possible I can store p_id of the order products:
             1. create a separate table for storing product details associated with the order_id
             2. else put p_id with comma separated in the same order table itself
