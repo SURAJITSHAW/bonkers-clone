@@ -76,7 +76,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                                 <div>
                                     <p style="margin: 20px;">Hello <strong><?php echo $row['user_name']; ?></strong>👋👋</p>
                                     <p style="margin: 20px;">Email: <strong><?php echo $row['email']; ?></strong></p>
-                                    <p style="margin: 20px;">Address: <strong><?php echo $row['address']; ?></strong></p>
                                     <?php
                                     // SQL query to get total amount and total orders
                                     $sql = "SELECT COUNT(*) AS total_orders, SUM(amount) AS total_amount FROM orders WHERE user_id=" . $_SESSION['userid'];

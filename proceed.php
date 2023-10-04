@@ -167,7 +167,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                                 $result = mysqli_query($conn, $sql_fetch_cartDB) or die("Query Unsuccessful.");
 
                                 if (mysqli_num_rows($result) > 0) {
-                                    $productsAndQuantity = array();
+                                    $p_ids = array();
+                                    $qnt = array();
                                     $total = 0;
                                     while ($row = mysqli_fetch_assoc($result)) {
                                         echo '<tr>';
@@ -177,9 +178,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                                         $quantity = (int)$row['quantity'];
                                         $p_id = $row['p_id'];
 
-
-                                        $temp_arr = array($p_id => $quantity);
-                                        $productsAndQuantity[] = $temp_arr;
+                                        $p_ids[] = $p_id;
+                                        $qnt[] = $quantity;
 
                             ?>
                                         <td><?php echo $row['p_name'] . " <small>x</small> " . $quantity; ?></td>
@@ -295,15 +295,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                             </tr>
                         </tfoot>
                     </table>
-                    <button proAndQuant="<?php echo htmlentities(json_encode($productsAndQuantity)); ?>" id="proceed-button" data-amount="<?php $floatValue = (float) str_replace(',', '', $totalRounded);
-                                                                                                                                            $paisaValue = (int) ($floatValue * 100);
-                                                                                                                                            echo $paisaValue; ?>" data-user="<?php echo $_SESSION['userid']; ?>" data-address-id="" class="btn buynow">
+                    <button qnt="<?php echo htmlentities(json_encode($qnt)); ?>" p_ids="<?php echo htmlentities(json_encode($p_ids)); ?>" id="proceed-button" data-amount="<?php $floatValue = (float) str_replace(',', '', $totalRounded);
+                                                                                                                                                                                $paisaValue = (int) ($floatValue * 100);
+                                                                                                                                                                                echo $paisaValue; ?>" data-user="<?php echo $_SESSION['userid']; ?>" data-address-id="" class="btn buynow">
                         Proceed With Payment
                     </button>
-
-
-
-
 
                 </div>
             </div>
@@ -366,6 +362,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
             var amount = $(this).attr('data-amount');
             var userID = $(this).attr('data-user');
 
+            // Get the JSON-encoded array from the button attribute
+            var p_ids = $(this).attr('p_ids');
+            var p_idsArray = JSON.parse(p_ids);
+            console.log(p_idsArray);
+            var qnt = $(this).attr('qnt');
+            var qntArray = JSON.parse(qnt);
+            console.log(qntArray);
+
 
             var options = {
                 "key": "rzp_test_WBMQb7K0Ics3Yj", // Enter the Key ID generated from the Dashboard
@@ -382,7 +386,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         data: {
                             user_id: userID,
                             payment_id: paymentid,
-                            total_paid: amount
+                            total_paid: amount,
+                            p_ids: p_idsArray,
+                            qnt: qntArray
                         },
                         success: function(finalresponse) {
                             if (finalresponse == 'done') {

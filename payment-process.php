@@ -7,9 +7,13 @@ $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Fa
 $paymentid=$_POST['payment_id'];
 $userid=$_POST['user_id'];
 $amount=$_POST['total_paid'];
+$p_ids=$_POST['p_ids'];
+$p_idsString = implode(', ', $p_ids);
+$qnt=$_POST['qnt'];
+$qntString = implode(', ', $qnt);
 $dt=date('Y-m-d h:i:s');
 
-$sql="insert into orders (user_id,payment_id,amount,added_date) values ('".$userid."','".$paymentid. "','" . $amount . "','".$dt."')";
+$sql= "insert into orders (user_id, p_ids, quantities, payment_id,amount,added_date) values ('".$userid. "','" . $p_idsString . "','" . $qntString . "','".$paymentid. "','" . $amount . "','".$dt."')";
 
 $result=mysqli_query($conn,$sql);
 
