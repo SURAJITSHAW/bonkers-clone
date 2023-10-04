@@ -1,68 +1,5 @@
 <?php
 session_start();
-// if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
-//     header('location: login.php');
-//     exit;
-// }
-// $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-
-// if (isset($_POST['add-cart'])) {
-
-//     if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) {
-//         $p_id = $_POST['p_id'];
-//         $quantity = $_POST['quantity'];
-//         /* if youre logged in and want to add a product in the cart: */
-
-//         //    1. if the product is already in the cart -> just add the quantity
-
-//         $sql_p_exist = "select * from cart where p_id={$p_id}";
-//         $result_exist = mysqli_query($conn, $sql_p_exist) or die("Query Unsuccessful.");
-
-//         if (mysqli_num_rows($result_exist) > 0) {
-//             while ($row_exist = mysqli_fetch_assoc($result_exist)) {
-//                 $newQuantity = $row_exist['quantity'] +  $quantity;
-//                 $sql1 = "UPDATE `cart` SET `quantity` = {$newQuantity} WHERE `cart`.`p_id` ={$p_id}";
-//                 $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-//             }
-//         }
-//         //    2. or the product isn't in the cart -> insert it
-//         else {
-//             $sql1 = "INSERT INTO `cart` (`user_id`, `p_id`, `quantity`) VALUES ({$_SESSION['userid']}, {$p_id}, {$quantity});";
-//             $result1 = mysqli_query($conn, $sql1) or die("Query Unsuccessful.");
-//         }
-//     } else {
-//         if (isset($_SESSION['cart'])) {
-
-//             $item_arr_id = array_column($_SESSION['cart'], 'p_id');
-
-//             if (in_array($_POST['p_id'], $item_arr_id)) {
-//                 echo "<script>
-//                 alert('Product is already in the cart')
-//             </script>";
-//                 echo "<script>
-//                 document.referrer
-//             </script>";
-//             } else {
-//                 $count = count($_SESSION['cart']);
-//                 $item_arr = array(
-//                     'p_id' => $_POST['p_id'],
-//                     'quantity' => $_POST['quantity']
-//                 );
-//                 $_SESSION['cart'][$count] = $item_arr;
-//             }
-//         }
-//         // If session variable cart isn't set
-//         else {
-//             $item_arr = array(
-//                 'p_id' => $_POST['p_id'],
-//                 'quantity' => $_POST['quantity']
-//             );
-
-//             $_SESSION['cart'][0] = $item_arr;
-//         }
-//     }
-// }
-
 ?>
 
 
@@ -439,43 +376,330 @@ session_start();
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const addToCartForm = document.getElementById("add-to-cart-form");
+    function updateMiniCart() {
+        // Send an AJAX request to fetch cart data
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "update_mini_cart.php", true);
 
-        addToCartForm.addEventListener("submit", function(e) {
-            e.preventDefault(); // Prevent the default form submission
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr);
+                // Parse the JSON response and update the mini-cart
+                const cartData = JSON.parse(xhr.responseText);
+                console.log(cartData);
+                // Update your mini-cart HTML with the new cartData
 
-            const productId = addToCartForm.querySelector("input[name='p_id']").value;
-            const quantity = addToCartForm.querySelector("input[name='quantity']").value;
+                // Get the <ul> element where you want to replace the content
+                const cartList = document.querySelector('.list-cart');
 
-            console.log(productId, quantity);
+                // Remove existing <li> elements
+                cartList.innerHTML = '';
 
-            // Send an AJAX request to the PHP script to add the product to the cart
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "add_to_cart.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                // Generate and append new <li> elements based on cartData
+                cartData.forEach(item => {
+                    const li = document.createElement('li');
+                    li.setAttribute('data-product-id', item.p_id);
+                    li.style.margin = '5px';
+                    li.style.padding = '10px';
+                    // li.style.borderBottom = '1px solid #333';
+                    let temp_price = (item.quantity * (item.p_price - (item.p_price * (15 / 100)))).toFixed(2);
+                    let discountedPrice = (item.p_price - (item.p_price * (15 / 100))).toFixed(2);
 
+
+                    // Create the inner content of each <li> element
+                    li.innerHTML = `
+                            <div class="carted-item">
+                                <div>
+                                    <img src="../../bonkerscorner.com/uploads/${item.p_img}" height="100px" />
+                                </div>
+                                <div class="carted-item-details">
+                                    <div class="carted-item-title">
+                                        <p>${item.p_name}</p>
+                                        <!-- Add an "X" button with a click event -->
+                                        <i style="cursor: pointer;" class="bi bi-x" data-pID="${item.p_id}"></i>
+                                    </div>
+                                    <div class="quantity" style="display: flex; align-items: center; margin-top: 5px; margin-bottom: -20px;">
+                                        <div class="rey-qtyField cartBtnQty-controls" style="display: flex; align-items: center;">
+                                            <!-- Add quantity input and controls here -->
+                                            <span class="cartBtnQty-control --minus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="decrementQuantityLogIn(${item.p_id})">
+                                                -
+                                            </span>
+
+                                            <input readonly type="number" id="quantity_${item.p_id}" class="input-text qty text --select-text" step="1" min="1" max="100" name="quantity" value="${item.quantity}" title="Qty" size="4" style="margin: 0 10px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;" inputmode="numeric" />
+
+                                            <span class="cartBtnQty-control --plus" style="cursor: pointer; padding: 8px; background-color: #f0f0f0; border-radius: 4px;" onclick="incrementQuantityLogIn(${item.p_id})">
+                                                +
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="showcase-pricing">
+                                        <p class="actual-price" id="actual_price_${item.p_id}">₹${item.p_price}</p>
+                                        <p class="discounted-price">₹${discountedPrice}</p>
+                                        <p style="color: red; font-weight: bolder" id="temp_total_${item.p_id}">₹${temp_price}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                    // Append the new <li> element to the <ul>
+                    cartList.appendChild(li);
+                });
+            }
+        };
+        // Call updateTotal initially to calculate the total
+        <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) : ?>
+            updateTotalLogIn();
+        <?php else : ?>
+            updateTotal();
+        <?php endif; ?>
+
+        xhr.send();
+    }
+
+    const addToCartForm = document.getElementById("add-to-cart-form");
+
+    addToCartForm.addEventListener("submit", function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        const productId = addToCartForm.querySelector("input[name='p_id']").value;
+        const quantity = addToCartForm.querySelector("input[name='quantity']").value;
+
+        console.log(productId, quantity);
+
+        // Send an AJAX request to the PHP script to add the product to the cart
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "add_to_cart.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Handle the response from the server (e.g., show a success message)
+                    console.log(xhr);
+                    // const response = JSON.parse(xhr.responseText);
+                    // if (response.success) {
+                    //     alert("Product added to cart successfully!");
+                    // } else {
+                    //     alert("Failed to add product to cart.");
+                    // }
+                } else {
+                    alert("Failed to connect to the server.");
+                }
+            }
+        };
+
+        const data = `add-cart=1&p_id=${productId}&quantity=${quantity}`;
+        xhr.send(data);
+        updateMiniCart();
+    });
+</script>
+
+<script>
+    // Add a click event listener to all elements with the class 'bi-x'
+    document.querySelectorAll('.bi-x').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var p_id = this.getAttribute('data-pID');
+
+            // Send p_id to a PHP script using AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "processClick.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Handle the response from the server (e.g., show a success message)
-                        console.log(xhr);
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            alert("Product added to cart successfully!");
-                        } else {
-                            alert("Failed to add product to cart.");
-                        }
-                    } else {
-                        alert("Failed to connect to the server.");
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Handle the response from the PHP script if needed
+
+                    // Remove the item from the mini-cart display
+                    var cartItem = document.querySelector('li[data-product-id="' + p_id + '"]');
+                    if (cartItem) {
+                        cartItem.remove();
+                        updateTotalLogIn();
                     }
+
+                    console.log(xhr.responseText);
                 }
             };
-
-            const data = `add-cart=1&p_id=${productId}&quantity=${quantity}`;
-            xhr.send(data);
+            xhr.send("p_id=" + p_id);
         });
     });
+
+    function updateTotalLogIn() {
+        // Send an AJAX request to get the updated total
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "getUpdatedTotal.php", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+                var response = JSON.parse(xhr.responseText);
+                var totalLogIn = response.total;
+                var totalLogInF = totalLogIn.total;
+                console.log(totalLogInF);
+
+                // Update the total displayed on the page
+                if (totalLogInF == null) {
+                    document.getElementById('total').innerHTML = '₹ 0.00';
+                } else {
+                    document.getElementById('total').innerHTML = '₹' + totalLogInF;
+
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function updateItemTotal(productId, newQuantity) {
+        // Send an AJAX request to update the quantity in the cart table
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "updateQuantity.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        // Prepare the data to send to the server
+        var data = "p_id=" + productId + "&quantity=" + newQuantity;
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Handle the response from the PHP script if needed
+                console.log(xhr.responseText);
+                // Update the total and temp_total for the corresponding item
+                updateTotalLogIn();
+                updateItemTempTotal(productId, newQuantity);
+            }
+        };
+
+        // Send the request
+        xhr.send(data);
+    }
+
+    function incrementQuantityLogIn(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var maxValue = parseInt(quantityInput.getAttribute('max'));
+
+        if (currentValue < maxValue) {
+            quantityInput.value = currentValue + 1;
+            updateItemTotal(productId, currentValue + 1);
+        }
+    }
+
+    function decrementQuantityLogIn(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var minValue = parseInt(quantityInput.getAttribute('min'));
+
+        if (currentValue > minValue) {
+            quantityInput.value = currentValue - 1;
+            updateItemTotal(productId, currentValue - 1);
+        }
+    }
+
+    function updateItemTempTotal(productId, newQuantity) {
+        // Calculate the new temp_total for the item
+        var productPriceBefroe = document.getElementById('actual_price_' + productId).textContent;
+        var productPrice = parseFloat(productPriceBefroe.replace(/[^\d.]/g, ''));
+        console.log(productPrice);
+        var discountedPrice = productPrice - (productPrice * 0.15);
+        console.log(discountedPrice);
+        var tempTotal = newQuantity * discountedPrice;
+        console.log(tempTotal);
+
+        // Update the temp_total on the page
+        document.getElementById('temp_total_' + productId).textContent = '₹' + tempTotal.toFixed(2);
+    }
+
+
+
+
+    // While not logged in basically everything handles in session
+
+    function removeCartItem(productId) {
+        // Send an AJAX request to remove the item from the session
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'remove_item.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Item removed successfully from the session
+                // You can add any additional handling here if needed
+
+                // Remove the item from the mini-cart display
+                var cartItem = document.querySelector('li[data-product-id="' + productId + '"]');
+                if (cartItem) {
+                    cartItem.remove();
+                }
+
+                // Update the total
+                updateTotal();
+            }
+        };
+        xhr.send('product_id=' + productId);
+    }
+
+    function updateSession(productId, quantity) {
+        // Send an AJAX request to a PHP script to update the session
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'update_session.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Session updated successfully
+                // You can add any additional handling here if needed
+            }
+        };
+        xhr.send('product_id=' + productId + '&quantity=' + quantity);
+    }
+
+    function updateTotal() {
+        var total = 0;
+
+        <?php foreach ($_SESSION['cart'] as $cartItem) : ?>
+            var productId = <?php echo $cartItem['p_id']; ?>;
+            var quantity = parseInt(document.getElementById('quantity_' + productId).value);
+            var price = parseFloat(window['discountedPrice_' + productId]); // Access the discounted price using the variable name
+
+            var tempTotal = quantity * price;
+            total += tempTotal;
+
+            document.getElementById('temp_total_' + productId).textContent = '₹' + tempTotal.toFixed(2);
+        <?php endforeach; ?>
+
+        document.getElementById('total').textContent = '₹' + total.toFixed(2);
+    }
+
+
+    function incrementQuantity(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var maxValue = parseInt(quantityInput.getAttribute('max'));
+
+        if (currentValue < maxValue) {
+            quantityInput.value = currentValue + 1;
+            updateTotal();
+
+            // Call the updateSession function to update the session variable
+            updateSession(productId, currentValue + 1);
+        }
+    }
+
+    function decrementQuantity(productId) {
+        var quantityInput = document.getElementById('quantity_' + productId);
+        var currentValue = parseInt(quantityInput.value);
+        var minValue = parseInt(quantityInput.getAttribute('min'));
+
+        if (currentValue > minValue) {
+            quantityInput.value = currentValue - 1;
+            updateTotal();
+
+            // Call the updateSession function to update the session variable
+            updateSession(productId, currentValue - 1);
+        }
+    }
+
+
+    // Call updateTotal initially to calculate the total
+    <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) : ?>
+        updateTotalLogIn();
+    <?php else : ?>
+        updateTotal();
+    <?php endif; ?>
 </script>
 
 

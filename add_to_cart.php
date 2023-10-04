@@ -32,9 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (isset($_SESSION['cart'])) {
                 // Check if the product is already in the session cart
                 $item_arr_id = array_column($_SESSION['cart'], 'p_id');
+                $item_key = array_search($productId, $item_arr_id);
 
-                if (in_array($productId, $item_arr_id)) {
-                    echo json_encode(["success" => false, "message" => "Product is already in the cart"]);
+                if ($item_key !== false) {
+                    // Product is already in the cart, update the quantity
+                    $_SESSION['cart'][$item_key]['quantity'] += $quantity;
+                    echo json_encode(["success" => true, "message" => "Product quantity updated in the cart"]);
                 } else {
                     $count = count($_SESSION['cart']);
                     $item_arr = [

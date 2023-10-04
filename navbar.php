@@ -39,12 +39,12 @@
     <!-- Normal Navigation -->
     <?php
 
-    $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
-    $sql = "SELECT * FROM category";
-    // $sql = "SELECT * FROM subcategory s JOIN category c ON s.category_id = c.category_id";
-    $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
+        $conn = mysqli_connect("localhost", "root", "", "bonkers") or die("Connection Failed");
+        $sql = "SELECT * FROM category";
+        // $sql = "SELECT * FROM subcategory s JOIN category c ON s.category_id = c.category_id";
+        $result = mysqli_query($conn, $sql) or die("Query Unsuccessful.");
 
-    if (mysqli_num_rows($result) > 0) {
+        if (mysqli_num_rows($result) > 0) {
 
 
     ?>
@@ -136,9 +136,6 @@
 
 <!-- Mini Cart -->
 
-
-
-<!-- Your HTML and PHP code before the mini-cart -->
 
 <?php if (isset($_SESSION['loggedin']) && isset($_SESSION['userid'])) { ?>
     <div class="mini-cart">
