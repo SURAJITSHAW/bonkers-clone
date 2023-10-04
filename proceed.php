@@ -296,8 +296,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                         </tfoot>
                     </table>
                     <button qnt="<?php echo htmlentities(json_encode($qnt)); ?>" p_ids="<?php echo htmlentities(json_encode($p_ids)); ?>" id="proceed-button" data-amount="<?php $floatValue = (float) str_replace(',', '', $totalRounded);
-                                                                                                                                                                                $paisaValue = (int) ($floatValue * 100);
-                                                                                                                                                                                echo $paisaValue; ?>" data-user="<?php echo $_SESSION['userid']; ?>" data-address-id="" class="btn buynow">
+                                                                                                                                                                            $paisaValue = (int) ($floatValue * 100);
+                                                                                                                                                                            echo $paisaValue; ?>" data-user="<?php echo $_SESSION['userid']; ?>" data-address-id="" class="btn buynow">
                         Proceed With Payment
                     </button>
 
@@ -361,6 +361,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
 
             var amount = $(this).attr('data-amount');
             var userID = $(this).attr('data-user');
+            var addID = $(this).attr('data-address-id');
 
             // Get the JSON-encoded array from the button attribute
             var p_ids = $(this).attr('p_ids');
@@ -388,7 +389,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
                             payment_id: paymentid,
                             total_paid: amount,
                             p_ids: p_idsArray,
-                            qnt: qntArray
+                            qnt: qntArray,
+                            add_id: addID
                         },
                         success: function(finalresponse) {
                             if (finalresponse == 'done') {
